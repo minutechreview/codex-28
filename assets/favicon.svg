@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" role="img" aria-labelledby="favicon-title">
+  <title id="favicon-title">Codex 28 smiling orange dot</title>
+  <rect width="64" height="64" rx="18" fill="#f5f1e8"/>
+  <circle cx="32" cy="32" r="25" fill="#f46440"/>
+  <ellipse cx="24" cy="27" rx="3.5" ry="5" fill="#f5f1e8"/>
+  <ellipse cx="40" cy="26" rx="3.5" ry="5" fill="#f5f1e8"/>
+  <ellipse cx="25" cy="28" rx="1.6" ry="2.5" fill="#22231f"/>
+  <ellipse cx="41" cy="27" rx="1.6" ry="2.5" fill="#22231f"/>
+  <path d="M24 39C29 45 36 45 42 37" stroke="#22231f" stroke-opacity="1" stroke-width="2.5" stroke-linecap="round"/>
+</svg>
