@@ -1,0 +1,34 @@
+Codex 28 custom artwork — provenance and use
+
+PNG character assets
+--------------------
+Files: blue-dot.png, green-dot.png, yellow-dot.png, pink-dot.png
+
+Generated on October 5, 2026 with imagegen using the user's supplied
+DotLauncher artwork reference. The user stated that they own that reference
+and authorized matching it for this public Codex 28 project. These are
+custom project character illustrations created from that supplied reference.
+
+The generated 1254 x 1254 RGBA sprite sheet was split into four requested
+regions, then cropped to each character's alpha bounds with 16 px padding
+and losslessly optimized. Only near-invisible alpha noise in empty margins
+was excluded; the retained artwork pixels were not recolored or regenerated.
+
+The PNG assets are delivered for use in the authorized Codex 28 project.
+This notice does not grant independent rights to the user's source reference.
+No broader PNG redistribution license is asserted here.
+
+SVG icon artwork
+--------------------
+File: favicon.svg
+
+This SVG was independently authored for this project on October 5, 2026.
+To the extent possible under law, the author has waived all copyright
+and related or neighboring rights to this SVG asset under the
+Creative Commons CC0 1.0 Universal public-domain dedication.
+
+You may copy, modify, distribute, and use the SVG assets, including for
+commercial purposes, without asking permission or providing attribution.
+
+Full CC0 legal text:
+https://creativecommons.org/publicdomain/zero/1.0/legalcode
