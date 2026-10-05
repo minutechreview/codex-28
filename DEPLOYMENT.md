@@ -59,16 +59,23 @@ For UI or artwork changes, rebuild and update the existing `gh-pages` checkout w
 
 ## Deployment evidence
 
-At documentation creation, the URLs below are intended targets, not a verified live claim. The release owner should replace this pending record only after inspecting the actual remote commits and live responses.
+Verified live on **2026-10-05 at 13:54 UTC**. The actual remote application source and deployment commit IDs were read back from GitHub. Native GitHub Pages built the deployment commit successfully at `2026-10-05T13:51:58Z`.
 
-| Evidence | Status |
+| Evidence | Result |
 | --- | --- |
-| Repository | Target: `https://github.com/minutechreview/codex-28` |
-| Live Pages URL | Target: `https://minutechreview.github.io/codex-28/` |
-| Source commit | Pending verification |
-| Deployment branch commit | Pending verification |
-| Pages configuration / deployment result | Pending verification |
-| Live HTML, JSON, and referenced assets | Pending verification |
-| Responsive screenshots / preview | Pending final visual check |
+| Repository | [minutechreview/codex-28](https://github.com/minutechreview/codex-28), public, default branch `main` |
+| Live Pages URL | [https://minutechreview.github.io/codex-28/](https://minutechreview.github.io/codex-28/) |
+| Released application source commit | `b271cca7bcb9c85c1ff6d75585402924b41a80fe` |
+| Deployment branch commit | `483be9a0f00cfbfe3e3130495b413d352c02595d` |
+| Pages configuration | `legacy` branch publication, `gh-pages`, `/`, public, HTTPS enforced, no custom domain |
+| Pages build | `built`, exact deployment commit, no build error |
+| Live payload | HTML, JSON, CSS, both JS modules, four character PNGs, favicon, and asset license all HTTP 200; all 11 file bytes match the local public build |
+| Live data | Schema valid; 0 improvements, 0 resets, 28 pending, 0 missed; day 2 in Pacific time; never-updated sentinel |
+| Local validation | Syntax checks, 41 Node tests, and 12-file allowlisted static build pass |
+| Browser verification | Desktop / mobile screenshots; functional status, source, fetch-error, sharing, copy fallback, timezone, keyboard, pointer, touch, reduced-motion, and responsive checks passed |
 
-Record a timestamp and observed commit IDs alongside the final evidence. A successful local build or a successful push alone does not establish that Pages is live.
+The root live page also loaded successfully in a real Chromium browser. Responsive checks cover 320, 390, 768, and 1280 pixel widths without horizontal overflow. Mock reported outcomes were used only in browser tests, never in the deployed JSON. The four characters support bounded mouse/touch dragging, keyboard arrows / Home, and tap / Enter / Space cheers; their play area clips the restrained release reaction so it cannot obscure the scoreboard.
+
+The public deployment contains only 12 deliberately selected files. Documentation and tests are public in the source branch but are not in the Pages payload. Screenshots, local QA outputs, and helper files were excluded from both public branches. No new account, paid service, credential, OAuth grant, access grant, custom DNS, or active analytics was introduced.
+
+The final source branch includes a documentation follow-up after the released application commit. Read its current head from GitHub when you need the newest documentation revision.

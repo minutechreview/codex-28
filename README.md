@@ -95,7 +95,7 @@ The four matching Dot Launcher characters can be dragged within their own play a
 
 ## Hosting and project scope
 
-The target repository is [minutechreview/codex-28](https://github.com/minutechreview/codex-28), with the target GitHub Pages URL [minutechreview.github.io/codex-28/](https://minutechreview.github.io/codex-28/). See [deployment status and verification](DEPLOYMENT.md#deployment-evidence) before treating those targets as a confirmed live deployment.
+The repository is [minutechreview/codex-28](https://github.com/minutechreview/codex-28), with the live GitHub Pages URL [minutechreview.github.io/codex-28/](https://minutechreview.github.io/codex-28/). The actual remote commits, successful Pages build, and live file checks are recorded in [deployment evidence](DEPLOYMENT.md#deployment-evidence).
 
 The project uses static hosting only: no paid API, login, backend, X scraper, or daily watcher. Analytics is an inactive placeholder comment; there is no active tracking script or analytics account. The deployment uses an existing authenticated GitHub account and free Pages hosting, with no custom domain, DNS change, new credentials, or access grants.
 
