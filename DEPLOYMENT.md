@@ -59,7 +59,7 @@ For UI or artwork changes, rebuild and update the existing `gh-pages` checkout w
 
 ## Deployment evidence
 
-Verified live on **2026-10-05 at 13:54 UTC**. The actual remote application source and deployment commit IDs were read back from GitHub. Native GitHub Pages built the deployment commit successfully at `2026-10-05T13:51:58Z`.
+Initial release verified live on **2026-10-05 at 13:54 UTC**, before the user-requested date-window correction. The actual remote application source and deployment commit IDs were read back from GitHub. Native GitHub Pages built the deployment commit successfully at `2026-10-05T13:51:58Z`.
 
 | Evidence | Result |
 | --- | --- |
@@ -70,7 +70,7 @@ Verified live on **2026-10-05 at 13:54 UTC**. The actual remote application sour
 | Pages configuration | `legacy` branch publication, `gh-pages`, `/`, public, HTTPS enforced, no custom domain |
 | Pages build | `built`, exact deployment commit, no build error |
 | Live payload | HTML, JSON, CSS, both JS modules, four character PNGs, favicon, and asset license all HTTP 200; all 11 file bytes match the local public build |
-| Live data | Schema valid; 0 improvements, 0 resets, 28 pending, 0 missed; day 2 in Pacific time; never-updated sentinel |
+| Live data | Initial release schema valid; 0 improvements, 0 resets, 28 pending, 0 missed; never-updated sentinel |
 | Local validation | Syntax checks, 41 Node tests, and 12-file allowlisted static build pass |
 | Browser verification | Desktop / mobile screenshots; functional status, source, fetch-error, sharing, copy fallback, timezone, keyboard, pointer, touch, reduced-motion, and responsive checks passed |
 
@@ -79,3 +79,5 @@ The root live page also loaded successfully in a real Chromium browser. Responsi
 The public deployment contains only 12 deliberately selected files. Documentation and tests are public in the source branch but are not in the Pages payload. Screenshots, local QA outputs, and helper files were excluded from both public branches. No new account, paid service, credential, OAuth grant, access grant, custom DNS, or active analytics was introduced.
 
 The final source branch includes a documentation follow-up after the released application commit. Read its current head from GitHub when you need the newest documentation revision.
+
+Date-window correction: the user requested **October 5–November 1, 2026**, inclusive, with Monday, October 5 as Day 1. All 28 date entries and visible window labels were shifted by one calendar day; statuses, summaries, sources, timestamps, artwork, design, and interactions were preserved. Boundary tests cover the 25-hour final day during the November 1 Pacific daylight-saving transition.

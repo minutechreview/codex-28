@@ -13,10 +13,10 @@ import {
 
 // Logic tests own a stable fixture. Editing the live scoreboard must not change
 // boundary/count expectations or prevent a legitimate data-only deployment.
-const fixtureStart = Date.parse("2026-10-04T00:00:00.000Z");
+const fixtureStart = Date.parse("2026-10-05T00:00:00.000Z");
 const initialRaw = {
-  startDate: "2026-10-04",
-  endDate: "2026-10-31",
+  startDate: "2026-10-05",
+  endDate: "2026-11-01",
   timezone: "America/Los_Angeles",
   source: "https://x.com/thsottiaux",
   days: Array.from({ length: TOTAL_DAYS }, (_, index) => ({
@@ -38,8 +38,8 @@ test("the actual public data.json is valid independently of its recorded results
 });
 
 test("the pending fixture has all 28 results pending and no claimed update", () => {
-  assert.equal(initial.startDate, "2026-10-04");
-  assert.equal(initial.endDate, "2026-10-31");
+  assert.equal(initial.startDate, "2026-10-05");
+  assert.equal(initial.endDate, "2026-11-01");
   assert.equal(initial.timezone, "America/Los_Angeles");
   assert.equal(initial.source, "https://x.com/thsottiaux");
   assert.equal(initial.days.length, TOTAL_DAYS);
@@ -58,7 +58,7 @@ test("timezone date conversion uses Los Angeles midnight, independently of UTC d
 });
 
 test("before the window the counter is zero, with all pending dates in the future", () => {
-  const state = getTrackerState(initial, at("2026-10-04T06:59:59.999Z"));
+  const state = getTrackerState(initial, at("2026-10-05T06:59:59.999Z"));
   assert.equal(state.phase, "before");
   assert.equal(state.day, 0);
   assert.equal(state.today, null);
@@ -68,7 +68,7 @@ test("before the window the counter is zero, with all pending dates in the futur
 });
 
 test("day 1 begins at midnight PDT and includes today among awaiting reports", () => {
-  const state = getTrackerState(initial, at("2026-10-04T07:00:00.000Z"));
+  const state = getTrackerState(initial, at("2026-10-05T07:00:00.000Z"));
   assert.equal(state.phase, "active");
   assert.equal(state.day, 1);
   assert.equal(state.today.day, 1);
@@ -80,18 +80,18 @@ test("day 1 begins at midnight PDT and includes today among awaiting reports", (
 });
 
 test("day 28 remains active through the complete local end date", () => {
-  for (const moment of ["2026-10-31T07:00:00.000Z", "2026-11-01T06:59:59.999Z"]) {
+  for (const moment of ["2026-11-01T07:00:00.000Z", "2026-11-01T08:30:00.000Z", "2026-11-01T09:30:00.000Z", "2026-11-02T07:59:59.999Z"]) {
     const state = getTrackerState(initial, at(moment));
     assert.equal(state.phase, "active");
     assert.equal(state.day, 28);
-    assert.equal(state.today.date, "2026-10-31");
+    assert.equal(state.today.date, "2026-11-01");
     assert.equal(state.awaitingReports, 28);
     assert.equal(state.futurePending, 0);
   }
 });
 
 test("after the window the counter stops at 28 and elapsed pending results never become missed", () => {
-  for (const moment of ["2026-11-01T07:00:00.000Z", "2028-06-01T12:00:00.000Z"]) {
+  for (const moment of ["2026-11-02T08:00:00.000Z", "2028-06-01T12:00:00.000Z"]) {
     const state = getTrackerState(initial, at(moment));
     assert.equal(state.phase, "after");
     assert.equal(state.day, 28);
@@ -110,7 +110,7 @@ test("only explicit reported statuses affect counters", () => {
   data.days[0] = { ...data.days[0], status: "improvement", summary: "Example verified improvement", tweetUrl: "https://x.com/thsottiaux/status/123456789" };
   data.days[1] = { ...data.days[1], status: "reset", summary: "Example verified reset" };
   data.days[2] = { ...data.days[2], status: "missed", summary: "Example manually confirmed missed result" };
-  const state = getTrackerState(validateData(data), at("2026-10-08T01:00:00Z"));
+  const state = getTrackerState(validateData(data), at("2026-10-09T01:00:00Z"));
   assert.equal(state.day, 4);
   assert.deepEqual(state.counts, { improvement: 1, reset: 1, pending: 25, missed: 1 });
   assert.equal(state.awaitingReports, 1);
@@ -142,7 +142,7 @@ const invalidCases = [
   ["nonconsecutive number", (data) => { data.days[2].day = 4; }],
   ["fractional day", (data) => { data.days[2].day = 3.5; }],
   ["wrong date", (data) => { data.days[2].date = "2026-10-08"; }],
-  ["wrong end date", (data) => { data.endDate = "2026-11-01"; }],
+  ["wrong end date", (data) => { data.endDate = "2026-11-02"; }],
   ["invalid calendar date", (data) => { data.startDate = "2026-02-30"; }],
   ["unknown timezone", (data) => { data.timezone = "Mars/Olympus_Mons"; }],
   ["numeric offset timezone", (data) => { data.timezone = "+01:00"; }],

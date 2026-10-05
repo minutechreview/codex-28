@@ -2,7 +2,7 @@
 
 A small, unofficial fan scoreboard for a 28-day watch of broadly useful Codex / ChatGPT Work improvements or full usage resets. A cream scoreboard, a colorful dot cheering section, and a public JSON file keep the project simple to use and update.
 
-The October 4–31, 2026 window is **this tracker's counting convention**, supplied for this project. It is not presented as a verified official schedule. The source is [Tibo's @thsottiaux profile](https://x.com/thsottiaux); the project does not claim a verified pledge permalink. All 28 outcomes initially remain pending, with “Never updated · results unverified” displayed. No improvement, reset, or missed day has been inferred.
+The October 5–November 1, 2026 window is **this tracker's counting convention**, supplied for this project. It is not presented as a verified official schedule. The source is [Tibo's @thsottiaux profile](https://x.com/thsottiaux); the project does not claim a verified pledge permalink. All 28 outcomes initially remain pending, with “Never updated · results unverified” displayed. No improvement, reset, or missed day has been inferred.
 
 This project is unaffiliated with OpenAI or Tibo and makes no promises on their behalf.
 
@@ -30,8 +30,8 @@ Every object must have exactly the documented keys. Missing or extra keys are re
 
 | Root key | Rule |
 | --- | --- |
-| `startDate` | A real calendar date in exact `YYYY-MM-DD` format. Initially `2026-10-04`. |
-| `endDate` | A real `YYYY-MM-DD` date exactly 27 calendar days after `startDate`, making 28 inclusive days. Initially `2026-10-31`. |
+| `startDate` | A real calendar date in exact `YYYY-MM-DD` format. Initially `2026-10-05`. |
+| `endDate` | A real `YYYY-MM-DD` date exactly 27 calendar days after `startDate`, making 28 inclusive days. Initially `2026-11-01`. |
 | `timezone` | A named IANA timezone supported by `Intl.DateTimeFormat`, with no surrounding whitespace or numeric offset. Initially `America/Los_Angeles`. |
 | `source` | A plain HTTPS X profile or post URL, at most 250 characters. Initially `https://x.com/thsottiaux`. |
 | `days` | Exactly 28 objects, in ascending consecutive day order. |
@@ -52,7 +52,7 @@ A pending entry looks like this:
 ```json
 {
   "day": 1,
-  "date": "2026-10-04",
+  "date": "2026-10-05",
   "status": "pending",
   "summary": "",
   "tweetUrl": null
