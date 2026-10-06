@@ -15,7 +15,7 @@
       "day": 2,
       "date": "2026-10-06",
       "status": "improvement",
-      "summary": "Auto-review is now free for everyone signed in with ChatGPT and no longer draws from plan usage. A second agent reviews the main agent's actions on long tasks to block high-risk or off-intent moves. Turn it on in Settings > Permissions > Auto-review.",
+      "summary": "Day 2.1: Codex Auto-review (\"Approve for me\") is now free for everyone signed in with ChatGPT and no longer uses plan usage. Day 2.2: OpenAI API rate-limit tiers simplified from five to three (Build, Launch, Grow), with the top tier now reachable at $500 in API payments instead of $1,000.",
       "tweetUrl": "https://x.com/thsottiaux/status/2107368734981517634"
     },
     {
@@ -201,5 +201,5 @@
       "tweetUrl": null
     }
   ],
-  "updatedAt": "2026-10-06T20:14:56.000Z"
+  "updatedAt": "2026-10-06T20:58:54.000Z"
 }
