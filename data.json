@@ -14,9 +14,9 @@
     {
       "day": 2,
       "date": "2026-10-06",
-      "status": "pending",
-      "summary": "",
-      "tweetUrl": null
+      "status": "improvement",
+      "summary": "Auto-review is now free for everyone signed in with ChatGPT and no longer draws from plan usage. A second agent reviews the main agent's actions on long tasks to block high-risk or off-intent moves. Turn it on in Settings > Permissions > Auto-review.",
+      "tweetUrl": "https://x.com/thsottiaux/status/2107368734981517634"
     },
     {
       "day": 3,
@@ -201,5 +201,5 @@
       "tweetUrl": null
     }
   ],
-  "updatedAt": "2026-10-05T17:23:51.000Z"
+  "updatedAt": "2026-10-06T20:14:56.000Z"
 }
