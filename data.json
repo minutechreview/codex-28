@@ -14,8 +14,8 @@
     {
       "day": 2,
       "date": "2026-10-06",
-      "status": "improvement",
-      "summary": "Day 2.1: Codex Auto-review (\"Approve for me\") is now free for everyone signed in with ChatGPT and no longer uses plan usage. Day 2.2: OpenAI API rate-limit tiers simplified from five to three (Build, Launch, Grow), with the top tier now reachable at $500 in API payments instead of $1,000.",
+      "status": "reset",
+      "summary": "Full reset processed after the community vote, on top of four ships: 2.1 Auto-review free for ChatGPT sign-ins, 2.2 simpler API rate-limit tiers, 2.3 Meetings note-taker plugin, 2.4 Decisions API.",
       "tweetUrl": "https://x.com/thsottiaux/status/2107368734981517634"
     },
     {
@@ -201,5 +201,5 @@
       "tweetUrl": null
     }
   ],
-  "updatedAt": "2026-10-06T20:58:54.000Z"
+  "updatedAt": "2026-10-07T06:17:46.000Z"
 }
