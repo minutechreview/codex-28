@@ -96,7 +96,7 @@ Date-window correction: the user requested **October 5–November 1, 2026**, inc
 
 ## Daily voting release evidence — October 8, 2026
 
-The approved production API is deployed. This section records the voting release separately from the historical October 5 site evidence above. Browser previews loaded the release assets at the production origin while reading the real API; they do not establish that the final voting UI has been published through GitHub Pages.
+The voting UI and approved production API are live at the existing [Codex 28 URL](https://minutechreview.github.io/codex-28/). This section records the voting release separately from the historical October 5 site evidence above. Final publication checks use the actual GitHub Pages files and API; earlier browser previews are identified separately.
 
 | Evidence | Result |
 | --- | --- |
@@ -111,6 +111,7 @@ The approved production API is deployed. This section records the voting release
 | Production-origin browser preview | Five earlier preview checks passed with real API reads, original artwork/modules, production subpath and 320/390 px layouts without overflow; vote controls were at least 44 px high; preview predates the Day 4 update and used intercepted release assets |
 | Isolated remote D1 write verification | Real production handler and live published JSON through a temporary Worker preview and separate remote D1: 23 synthetic votes; 52 concurrent attempts accepted exactly 21 unique new votes; immutable duplicates, invalid requests, CORS and day history passed; counters matched stored rows and survived full preview restart |
 | Temporary test cleanup | Preview stopped; no persistent QA Worker created; approved test-only D1 database and all 23 synthetic votes deleted after verification; production database retained untouched |
-| Final GitHub Pages voting publication | Pending: record the source and `gh-pages` release commits, successful Pages build, live voting payload check and byte-identical owner `data.json` after publication |
+| Final GitHub Pages voting publication | Application source `257dfba2c93a0a2f27459374adad657a7a5f3551`; deployment `2169a19979aa03420af3b216bcb8901c93ee56ca`; exact Pages commit built successfully at `2026-10-08T23:23:11Z`, no build error; all 14 live files HTTP 200 and byte-identical to the reviewed build, including owner `data.json` |
+| Actual live browser | 7 checks passed with actual network requests and no intercepted assets: owner Day 4 update, real API results/CORS for Days 1–4, pending Day 5 hidden, keyboard focus/navigation, 320/390 px mobile layouts without overflow and 44 px vote controls; no console/API errors or production POSTs. Native Chrome independently showed the published poll and shared results |
 
 Poll IDs remain `codex-28:YYYY-MM-DD:day-N`. Publishing a new day adds its own poll; editing a same-day report preserves earlier votes, and a temporary pending status hides the poll without deleting its database history. Visitors can submit only the two defined voting choices and cannot edit the owner's updates. Browser identifiers prevent ordinary repeat votes but do not establish one unique person; clearing storage or using another browser can permit another vote. Production totals were not seeded with test votes.
