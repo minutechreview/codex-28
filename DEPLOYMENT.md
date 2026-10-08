@@ -2,6 +2,18 @@
 
 Codex 28 is a static project intended for a public `minutechreview/codex-28` repository and GitHub Pages at `https://minutechreview.github.io/codex-28/`. The source branch holds the application, docs, and tests. The root of `gh-pages` holds only the reviewed public site payload.
 
+## Voting release gate
+
+The daily polls are prepared locally. Do not publish a functional-voting announcement or enable the UI until the shared backend is deployed and verified. The default `voting-config.json` contains `apiBaseUrl: null` and no invented results. [backend/README.md](backend/README.md) covers the Worker, D1 migration, persistent local verification, and activation steps.
+
+Inventory on October 8 found no dedicated Codex 28 backend among the connected Supabase, Vercel, Netlify, or Sites projects. The two active Supabase databases belong to unrelated projects. Saved Cloudflare authentication is expired; no token was refreshed. The proposed scoped service is a new `codex-28-voting` Worker and dedicated D1 database on the existing Cloudflare account, using its `workers.dev` address while the website stays on GitHub Pages.
+
+Before provisioning, obtain explicit approval to reconnect Cloudflare and create those resources. Verify the selected account's **Workers Free** plan and available D1 capacity. Stop for any new terms, broader permissions, credentials, payment, paid plan, or DNS changes. D1 Free quotas [return errors when exceeded](https://developers.cloudflare.com/d1/platform/pricing/), which the UI treats as unavailable; a paid plan can incur usage charges and requires separate approval. Check the current [Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/) as well.
+
+After approval and successful remote smoke checks, set the actual HTTPS Worker URL in `voting-config.json`, run all checks, and publish the source changes and reviewed static build to their separate existing branches with normal commits. Compare remote heads before writing; preserve any intervening owner edits. Publish the latest authoritative `data.json` unchanged to `gh-pages`, and verify the two copies match byte for byte. Backend source, migrations, local databases, QA evidence, and tests never belong in the Pages payload.
+
+Keep votes across releases: apply additive migrations to the same dedicated D1 database. Never recreate the database or reset poll IDs when a new day starts or a summary changes. Resetting a day to pending hides voting until it is republished but does not delete its prior database votes.
+
 ## Free GitHub Pages route
 
 Use the existing authenticated GitHub account. First inspect `gh auth status` and the target repository. Create the dedicated public repository only if the name is available; stop if an existing repository is unrelated. Do not overwrite another project. GitHub Pages supports public repositories on GitHub Free, and a project site's default address includes its repository name. See [GitHub's Pages overview](https://docs.github.com/en/pages/getting-started-with-github-pages/what-is-github-pages). This route needs no new account, paid service, custom DNS, OAuth grant, credential, or live analytics setup.

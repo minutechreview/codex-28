@@ -1,0 +1,16 @@
+{
+  // Preparation only. Approval and an authorized database are required before deployment.
+  "name": "codex-28-voting",
+  "main": "worker.js",
+  "compatibility_date": "2026-10-08",
+  "workers_dev": true,
+  "observability": { "enabled": false },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "codex-28-voting",
+      "database_id": "UNCONFIGURED_REQUIRES_APPROVAL",
+      "migrations_dir": "migrations"
+    }
+  ]
+}

@@ -8,7 +8,7 @@ This project is unaffiliated with OpenAI or Tibo and makes no promises on their 
 
 ## Run locally
 
-Use Node.js 20 or later, npm, and Python 3. There are no application dependencies to install.
+Use Node.js 22.16 or later, npm, and Python 3. There are no application dependencies to install. Local voting verification uses Node's built-in SQLite module.
 
 ```sh
 npm start
@@ -21,6 +21,18 @@ npm run check
 ```
 
 This checks JavaScript syntax, runs the Node test suite, validates the public data, and copies the intended static payload to `dist/`. `npm run lint`, `npm test`, and `npm run build` are also available separately. The source is plain HTML, CSS, and browser ES modules; there is no UI bundler.
+
+## Daily visitor voting
+
+The prepared voting feature lets visitors choose **Approve** or **Not convinced** on each published daily update. The existing day strip opens historical polls. Pending days and future days have no poll; publishing an update makes its date/day poll eligible automatically. Voting expresses visitor opinion and never edits the owner's update, status, summary, or source.
+
+Each poll has a permanent `codex-28:YYYY-MM-DD:day-N` identifier. Counts and the original vote stay attached to that day through refreshes, new days, and same-day text or status edits. The UI shows counts, percentages, loading, retry, and unavailable states. It never substitutes browser-local totals for shared results.
+
+Shared votes require the separate Worker/D1 backend described in [backend/README.md](backend/README.md). `voting-config.json` deliberately starts with `apiBaseUrl: null`: backend provisioning and reconnection are awaiting approval, so this preparation must not be presented as a functional live launch. The existing GitHub Pages URL, design, and authoritative standalone `data.json` remain the same.
+
+The browser stores a random identifier only for duplicate prevention. The database enforces one immutable vote per identifier per poll. Clearing storage, private browsing, or using another browser can allow another vote; this is a browser poll, not a verified one-person ballot. Browsers that cannot persist the identifier can read results but cannot vote. No account or tracking cookie is required.
+
+Run `npm run check` for syntax, model, frontend and SQLite backend tests. Backend tests require Node.js 22.16+ (`node:sqlite` and its [statement metadata API](https://nodejs.org/api/sqlite.html#statementcolumns)). Run `npm run voting:dev` for a local persistent SQLite API on `127.0.0.1:8787`. `npm run test:voting-browser` starts isolated local servers and runs Python Playwright checks; Python Playwright and Chromium must already be installed. The browser tests override configuration/data only inside their test context and leave public files unchanged.
 
 ## Public data
 
