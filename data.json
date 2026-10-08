@@ -21,9 +21,9 @@
     {
       "day": 3,
       "date": "2026-10-07",
-      "status": "pending",
-      "summary": "",
-      "tweetUrl": null
+      "status": "reset",
+      "summary": "GPT-6 rolled out to all ChatGPT users, plus a banked reset loaded into every paid account to celebrate a new high of 40M active users across Codex and ChatGPT Work.",
+      "tweetUrl": "https://x.com/thsottiaux/status/2107913674593644711"
     },
     {
       "day": 4,
@@ -201,5 +201,5 @@
       "tweetUrl": null
     }
   ],
-  "updatedAt": "2026-10-07T06:17:46.000Z"
+  "updatedAt": "2026-10-08T04:49:02.000Z"
 }
