@@ -56,10 +56,11 @@ def setup_context(browser, *, now=NOW, fixture=None, config=True,
     context = browser.new_context(viewport={"width": width, "height": height},
                                   is_mobile=touch, has_touch=touch)
     freeze_time(context, now)
-    if config:
-        context.route("**/voting-config.json*", lambda route: route.fulfill(
-            status=200, content_type="application/json",
-            body=json.dumps({"apiBaseUrl": API})))
+    # Always route the local test's service config. The null-config case is an
+    # explicit test fixture now that the real release has a production endpoint.
+    context.route("**/voting-config.json*", lambda route: route.fulfill(
+        status=200, content_type="application/json",
+        body=json.dumps({"apiBaseUrl": API if config else None})))
     if fixture is not None:
         context.route("**/data.json*", lambda route: route.fulfill(
             status=200, content_type="application/json", body=json.dumps(fixture)))
@@ -121,9 +122,11 @@ def main():
             collect_errors(page)
             load(page)
             assert_artwork(page)
-            expect(page.locator("#today-poll")).to_be_hidden()
+            expect(page.locator("#today-poll")).to_have_attribute("data-poll-id", poll_id(4))
+            assert_counts(page.locator("#today-poll"), 0, 0)
             expect(page.locator("#day-poll")).to_be_hidden()
-            passed("Pending today has no poll; original artwork loads")
+            expect(page.locator("#today-summary")).to_have_text(BASE_DATA["days"][3]["summary"])
+            passed("Owner's published day4 opens today's poll; original update and artwork load")
 
             for day in (1, 2, 3):
                 select_day(page, day)
@@ -133,8 +136,12 @@ def main():
                 expect(poll.locator('[data-choice="approve"]')).to_be_enabled()
             select_day(page, 4)
             expect(page.locator("#day-poll")).to_be_hidden()
+            expect(page.locator("#today-poll")).to_have_attribute("data-poll-id", poll_id(4))
+            select_day(page, 5)
+            expect(page.locator("#day-poll")).to_be_hidden()
+            expect(page.locator(f'.visitor-poll[data-poll-id="{poll_id(5)}"]')).to_have_count(0)
             expect(page.locator("#day-detail")).to_contain_text("Voting opens")
-            passed("Published days 1–3 have separate stable polls; pending day 4 does not")
+            passed("Published days 1–4 have separate stable polls; pending day5 has no poll")
 
             select_day(page, 1)
             poll = page.locator("#day-poll")
@@ -222,10 +229,12 @@ def main():
               document.dispatchEvent(new Event('visibilitychange'));
             }""")
             expect(today_page.locator("#day-number")).to_have_text("04")
-            expect(today_poll).to_be_hidden()
+            expect(today_poll).to_have_attribute("data-poll-id", poll_id(4))
+            assert_counts(today_poll, 0, 0)
+            expect(today_page.locator("#today-summary")).to_have_text(BASE_DATA["days"][3]["summary"])
             expect(today_page.locator("#day-poll")).to_have_attribute("data-poll-id", poll_id(3))
             assert_counts(today_page.locator("#day-poll"), 1, 0)
-            passed("Same-day summary/status edits and Pacific day rollover retain the same day poll and results")
+            passed("Same-day edits retain results; Pacific rollover opens owner's day4 poll while preserving day3 history")
 
             future_data = copy.deepcopy(BASE_DATA)
             future_data["days"][4].update(status="improvement", summary="Future fixture, never published by this test.")
@@ -326,7 +335,7 @@ def main():
             expect(closed_poll.locator(".poll-results")).to_be_hidden()
             expect(closed_poll.locator(".poll-choices")).to_be_hidden()
             assert "0 votes" not in closed_poll.inner_text()
-            passed("Unset live service config presents an honest unavailable state with no pretend results")
+            passed("Test-only null service config presents an honest unavailable state with no pretend results")
 
             mobile_metrics = []
             for width in (320, 390):

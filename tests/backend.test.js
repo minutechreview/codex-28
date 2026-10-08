@@ -187,8 +187,8 @@ test("published source is fixed, fetched without caching, and invalid data is ne
   for (const { url, init } of context.calls) {
     assert.equal(url.split("?")[0], SOURCE_URL);
     assert.equal(init.cache, "no-store");
-    assert.equal(init.redirect, "error");
-    assert.equal(init.cf.cacheTtl, 0);
+    assert.equal(init.redirect, "manual");
+    assert.equal(init.cf, undefined); // cacheTtl overrides conflict with no-store in workerd.
     assert.ok(init.signal instanceof AbortSignal);
   }
   context.data = { days: [{ day: 1, status: "improvement" }] };
@@ -199,7 +199,9 @@ test("published source is fixed, fetched without caching, and invalid data is ne
 
 test("source network, oversized, JSON and HTTP failures keep counts unchanged", async (t) => {
   for (const fetchSource of [async () => { throw new Error("Network"); }, async () => new Response("bad json"),
-    async () => new Response("unavailable", { status: 503 }), async () => new Response(" ".repeat(65537))]) {
+    async () => new Response("unavailable", { status: 503 }),
+    async () => new Response(null, { status: 302, headers: { Location: "https://untrusted.example/data.json" } }),
+    async () => new Response(" ".repeat(65537))]) {
     const { call, db } = setup(t, { fetchSource });
     const output = await call(DAY_1, { method: "POST" });
     assert.equal(output.status, 503);

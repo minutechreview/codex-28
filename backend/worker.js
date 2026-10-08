@@ -145,8 +145,9 @@ export function createVotingWorker({ fetchSource = globalThis.fetch, now = () =>
           const source = new URL(sourceUrl);
           source.searchParams.set("pollCheck", String(now().getTime()));
           const response = await fetchSource(source.href, {
-            headers: { Accept: "application/json" }, cache: "no-store", redirect: "error",
-            signal: AbortSignal.timeout(5000), cf: { cacheTtl: 0, cacheEverything: false },
+            // Workers supports manual/follow only; non-2xx (including redirects) fails closed below.
+            headers: { Accept: "application/json" }, cache: "no-store", redirect: "manual",
+            signal: AbortSignal.timeout(5000),
           });
           if (!response.ok) throw new Error("Source unavailable");
           data = validateData(JSON.parse(await boundedText(response, MAX_SOURCE_BYTES, new Error("Source too large"))));

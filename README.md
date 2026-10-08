@@ -2,7 +2,7 @@
 
 A small, unofficial fan scoreboard for a 28-day watch of broadly useful Codex / ChatGPT Work improvements or full usage resets. A cream scoreboard, a colorful dot cheering section, and a public JSON file keep the project simple to use and update.
 
-The October 5–November 1, 2026 window is **this tracker's counting convention**, supplied for this project. It is not presented as a verified official schedule. The source is [Tibo's @thsottiaux profile](https://x.com/thsottiaux); the project does not claim a verified pledge permalink. All 28 outcomes initially remain pending, with “Never updated · results unverified” displayed. No improvement, reset, or missed day has been inferred.
+The October 5–November 1, 2026 window is **this tracker's counting convention**, supplied for this project. It is not presented as a verified official schedule. The source is [Tibo's @thsottiaux profile](https://x.com/thsottiaux); the project does not claim a verified pledge permalink. At the initial release, all 28 outcomes were pending and the site displayed “Never updated · results unverified.” The owner subsequently added sourced reports to `data.json`; no improvement, reset, or missed day is inferred from time passing.
 
 This project is unaffiliated with OpenAI or Tibo and makes no promises on their behalf.
 
@@ -24,11 +24,11 @@ This checks JavaScript syntax, runs the Node test suite, validates the public da
 
 ## Daily visitor voting
 
-The prepared voting feature lets visitors choose **Approve** or **Not convinced** on each published daily update. The existing day strip opens historical polls. Pending days and future days have no poll; publishing an update makes its date/day poll eligible automatically. Voting expresses visitor opinion and never edits the owner's update, status, summary, or source.
+The voting feature lets visitors choose **Approve** or **Not convinced** on each published daily update. The existing day strip opens historical polls. Pending days and future days have no poll; publishing an update makes its date/day poll eligible automatically. Voting expresses visitor opinion and never edits the owner's update, status, summary, or source.
 
 Each poll has a permanent `codex-28:YYYY-MM-DD:day-N` identifier. Counts and the original vote stay attached to that day through refreshes, new days, and same-day text or status edits. The UI shows counts, percentages, loading, retry, and unavailable states. It never substitutes browser-local totals for shared results.
 
-Shared votes require the separate Worker/D1 backend described in [backend/README.md](backend/README.md). `voting-config.json` deliberately starts with `apiBaseUrl: null`: backend provisioning and reconnection are awaiting approval, so this preparation must not be presented as a functional live launch. The existing GitHub Pages URL, design, and authoritative standalone `data.json` remain the same.
+Shared votes use the separate Cloudflare Worker/D1 implementation described in [backend/README.md](backend/README.md). The approved production backend is deployed at `https://codex-28-voting.ryanatcdr.workers.dev` on the account's verified **Workers Free** plan. `voting-config.json` points to that HTTPS endpoint. Public reads and isolated remote vote, duplicate, concurrency, history, and restart checks pass. See the dated [voting release evidence](DEPLOYMENT.md#daily-voting-release-evidence--october-8-2026) for the current release status. The existing GitHub Pages URL, design, and authoritative standalone `data.json` remain the same.
 
 The browser stores a random identifier only for duplicate prevention. The database enforces one immutable vote per identifier per poll. Clearing storage, private browsing, or using another browser can allow another vote; this is a browser poll, not a verified one-person ballot. Browsers that cannot persist the identifier can read results but cannot vote. No account or tracking cookie is required.
 
@@ -109,7 +109,7 @@ The four matching Dot Launcher characters can be dragged within their own play a
 
 The repository is [minutechreview/codex-28](https://github.com/minutechreview/codex-28), with the live GitHub Pages URL [minutechreview.github.io/codex-28/](https://minutechreview.github.io/codex-28/). The actual remote commits, successful Pages build, and live file checks are recorded in [deployment evidence](DEPLOYMENT.md#deployment-evidence).
 
-The project uses static hosting only: no paid API, login, backend, X scraper, or daily watcher. Analytics is an inactive placeholder comment; there is no active tracking script or analytics account. The deployment uses an existing authenticated GitHub account and free Pages hosting, with no custom domain, DNS change, new credentials, or access grants.
+The frontend uses free GitHub Pages hosting; shared visitor voting adds the dedicated Cloudflare Worker and D1 database on the existing Workers Free plan. There is no visitor login, paid API, X scraper, or daily watcher. Analytics is an inactive placeholder comment; there is no active tracking script or analytics account. The approved setup uses the existing GitHub and Cloudflare accounts with the reviewed Cloudflare permissions and the default `workers.dev` address. It does not include a paid upgrade, custom domain, DNS change, or broader access grant. Free service quotas can make voting unavailable; see the current [D1 limits and pricing](https://developers.cloudflare.com/d1/platform/pricing/) and [Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/).
 
 ## License
 
