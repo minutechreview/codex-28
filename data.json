@@ -22,7 +22,7 @@
       "day": 3,
       "date": "2026-10-07",
       "status": "reset",
-      "summary": "GPT-6 with Intelligent UI rolled out to all ChatGPT users, plus a banked reset (confirmed landed in every paid account) to celebrate a new high of 40M active users across Codex and ChatGPT Work.",
+      "summary": "3.1 GPT-6 with Intelligent UI rolled out to all ChatGPT users, plus a banked reset (confirmed landed in every paid account) to celebrate a new high of 40M active users across Codex and ChatGPT Work. 3.2 (encore, late evening PT): Codex Cloud silently re-shipped; Tibo says it's \"pretty good now\" (quoting the new Codex Cloud + Tailscale tailnet integration).",
       "tweetUrl": "https://x.com/thsottiaux/status/2107913674593644711"
     },
     {
@@ -201,5 +201,5 @@
       "tweetUrl": null
     }
   ],
-  "updatedAt": "2026-10-08T04:51:37.000Z"
+  "updatedAt": "2026-10-08T15:45:00.000Z"
 }
