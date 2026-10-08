@@ -28,9 +28,9 @@
     {
       "day": 4,
       "date": "2026-10-08",
-      "status": "pending",
-      "summary": "",
-      "tweetUrl": null
+      "status": "improvement",
+      "summary": "4.1 Instant steering so the model reacts much faster to adjustments and course-corrects in realtime without wasting effort. 4.2 GPT-6.1 Sol ultrafast rolling out in API, Codex, and ChatGPT Work (near-Astra intelligence at up to 8x Sol Standard).",
+      "tweetUrl": "https://x.com/thsottiaux/status/2108275041276420573"
     },
     {
       "day": 5,
@@ -201,5 +201,5 @@
       "tweetUrl": null
     }
   ],
-  "updatedAt": "2026-10-08T15:45:00.000Z"
+  "updatedAt": "2026-10-08T21:43:50.000Z"
 }
