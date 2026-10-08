@@ -1,4 +1,5 @@
 import { validateData, getTrackerState, freshness } from './model.js';
+import { pollIdFor, validateVotingConfig, browserIdentity, votePercentages, PollStore } from './polls.js';
 
 const $ = (id) => document.getElementById(id);
 const names = { improvement: 'Improvement', reset: 'Reset', pending: 'Waiting', missed: 'Missed' };
@@ -7,6 +8,133 @@ let currentData = null;
 let selectedDay = null;
 let loading = false;
 let clockKey = '';
+let votingConfigLoading = false;
+const choiceNames = { approve: 'Approve', not_convinced: 'Not convinced' };
+const polls = new PollStore({ fetchImpl: (...args) => fetch(...args), identity: { voterId: null, available: false } });
+
+function renderPoll(host, entry, currentDate) {
+  const pollId = pollIdFor(entry, currentDate);
+  if (!pollId) {
+    host.hidden = true;
+    delete host.dataset.pollId;
+    host.replaceChildren();
+    return;
+  }
+  host.hidden = false;
+  if (host.dataset.pollId !== pollId) {
+    host.dataset.pollId = pollId;
+    // Only static markup goes through innerHTML; all update/service text uses textContent.
+    host.innerHTML = `<h4 class="poll-title" id="${host.id}-title">Approve this update?</h4>
+      <p class="poll-day" id="${host.id}-day"></p>
+      <div class="poll-choices" role="group" aria-labelledby="${host.id}-title" aria-describedby="${host.id}-day">
+        <button type="button" class="vote-button" data-choice="approve" aria-pressed="false" aria-describedby="${host.id}-day">Approve</button>
+        <button type="button" class="vote-button" data-choice="not_convinced" aria-pressed="false" aria-describedby="${host.id}-day">Not convinced</button>
+      </div>
+      <div class="poll-results" hidden>
+        <p class="poll-total"></p>
+        <dl class="poll-breakdown"><div><dt>Approve</dt><dd class="poll-approve"></dd></div><div><dt>Not convinced</dt><dd class="poll-not-convinced"></dd></div></dl>
+        <div class="poll-bar" aria-hidden="true"><span></span></div>
+      </div>
+      <p class="poll-status" role="status" aria-live="polite" aria-atomic="true"></p>
+      <div class="poll-actions"><button type="button" class="poll-refresh">Refresh results</button><button type="button" class="poll-retry-vote" hidden></button></div>
+      <p class="poll-help">One vote per browser per day. A random ID is saved on this device to remember your vote. Clearing browser storage or using another browser can allow another vote. These are visitor opinions; only the site owner updates the scoreboard.</p>`;
+    host.setAttribute('role', 'group');
+    host.setAttribute('aria-labelledby', `${host.id}-title`);
+    host.setAttribute('aria-describedby', `${host.id}-day`);
+    for (const button of host.querySelectorAll('[data-choice]')) {
+      button.addEventListener('click', () => polls.vote(pollId, button.dataset.choice));
+    }
+    host.querySelector('.poll-refresh').addEventListener('click', () => {
+      if (polls.configPhase === 'error') loadVotingConfig();
+      else if (polls.state(pollId).phase === 'closed') loadData();
+      else polls.refresh(pollId);
+    });
+    host.querySelector('.poll-retry-vote').addEventListener('click', () => {
+      const choice = polls.state(pollId).attemptedChoice;
+      if (choice) polls.vote(pollId, choice);
+    });
+  }
+  host.querySelector('.poll-day').textContent = `Day ${entry.day} · ${prettyDate(entry.date)} · ${names[entry.status]}`;
+  const state = polls.state(pollId);
+  const configured = polls.configPhase === 'ready';
+  const busy = configured && ['idle', 'loading', 'submitting'].includes(state.phase);
+  host.setAttribute('aria-busy', String(busy));
+  host.querySelector('.poll-choices').hidden = !configured || state.phase === 'closed';
+  for (const button of host.querySelectorAll('[data-choice]')) {
+    button.disabled = !configured || !polls.identity.available || state.phase !== 'ready' || Boolean(state.result?.yourVote);
+    button.setAttribute('aria-pressed', String(state.result?.yourVote === button.dataset.choice));
+  }
+  const results = host.querySelector('.poll-results');
+  results.hidden = !configured || !state.result || state.phase === 'closed';
+  if (!results.hidden) {
+    const result = state.result;
+    const percentages = votePercentages(result);
+    const stale = state.phase !== 'ready';
+    host.querySelector('.poll-total').textContent = `${result.total.toLocaleString('en-US')} vote${result.total === 1 ? '' : 's'} · ${stale ? 'last loaded results' : 'shared results'}`;
+    host.querySelector('.poll-approve').textContent = `${result.approve.toLocaleString('en-US')} · ${percentages.approve}%`;
+    host.querySelector('.poll-not-convinced').textContent = `${result.notConvinced.toLocaleString('en-US')} · ${percentages.notConvinced}%`;
+    host.querySelector('.poll-bar span').style.width = `${percentages.approve}%`;
+  }
+  let message;
+  if (polls.configPhase === 'loading') message = 'Loading visitor voting…';
+  else if (polls.configPhase === 'unavailable') message = 'Voting is not available yet. Please check back after polls open.';
+  else if (polls.configPhase === 'error') message = 'Visitor voting could not be loaded. Please try again.';
+  else if (state.phase === 'closed') message = 'This update is not open for voting. Refresh the scoreboard for the latest check-in.';
+  else if (state.phase === 'idle' || state.phase === 'loading') message = state.result ? 'Refreshing shared results…' : 'Loading shared results…';
+  else if (state.phase === 'submitting') message = `Saving your ${choiceNames[state.attemptedChoice]} vote…`;
+  else if (state.phase === 'read-error') message = state.result ? 'Results could not be refreshed. The last loaded results are shown. Please try again.' : 'Shared results could not be loaded. Please try again.';
+  else if (state.phase === 'vote-error') message = state.errorStatus === 429 ? 'Voting is busy. Please retry the same vote in a moment.' : 'We could not confirm your vote. It may have been saved. Check its status or retry the same vote.';
+  else if (!polls.identity.available) message = 'You can view shared results, but voting needs browser storage to remember your choice. Enable it and reload to vote.';
+  else if (state.result.yourVote) message = `Your vote: ${choiceNames[state.result.yourVote]}. Thanks for weighing in.`;
+  else message = state.result.total ? 'How do you feel about this update?' : 'No votes yet. How do you feel about this update?';
+  host.querySelector('.poll-status').textContent = message;
+  const refresh = host.querySelector('.poll-refresh');
+  refresh.hidden = ['loading', 'unavailable'].includes(polls.configPhase);
+  refresh.disabled = busy;
+  refresh.textContent = polls.configPhase === 'error' ? 'Try loading voting' : state.phase === 'closed' ? 'Refresh scoreboard' : state.phase === 'vote-error' ? 'Check vote status' : state.phase === 'read-error' ? 'Try again' : 'Refresh results';
+  const retryVote = host.querySelector('.poll-retry-vote');
+  retryVote.hidden = !configured || state.phase !== 'vote-error' || !state.attemptedChoice;
+  retryVote.textContent = state.attemptedChoice ? `Retry my ${choiceNames[state.attemptedChoice]} vote` : '';
+  host.querySelector('.poll-help').hidden = !configured;
+  if (configured) polls.ensure(pollId);
+}
+
+function renderVoting() {
+  if (!currentData) return;
+  const state = getTrackerState(currentData);
+  const entry = selectedDay ? currentData.days[selectedDay - 1] : null;
+  const todayId = pollIdFor(state.today, state.currentDate);
+  renderPoll($('today-poll'), state.today, state.currentDate);
+  renderPoll($('day-poll'), pollIdFor(entry, state.currentDate) === todayId ? null : entry, state.currentDate);
+}
+
+function refreshVisiblePolls() {
+  for (const host of [$('today-poll'), $('day-poll')]) {
+    if (!host.hidden && host.dataset.pollId) polls.refresh(host.dataset.pollId);
+  }
+}
+
+async function loadVotingConfig() {
+  if (votingConfigLoading) return;
+  votingConfigLoading = true;
+  polls.configPhase = 'loading';
+  polls.emit();
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), 10000);
+  try {
+    const url = new URL('./voting-config.json', import.meta.url);
+    url.searchParams.set('_', String(Date.now()));
+    const response = await fetch(url, { cache: 'no-store', signal: controller.signal });
+    if (!response.ok) throw new Error('Voting configuration unavailable.');
+    const config = validateVotingConfig(await response.json(), window.location.href);
+    if (config.apiBaseUrl && !polls.identity.available) {
+      try { polls.identity = browserIdentity(window.localStorage, window.crypto); } catch { /* Storage can be blocked at the property getter. */ }
+    }
+    polls.setConfig(config);
+  } catch { polls.configFailed(); }
+  finally { clearTimeout(timeout); votingConfigLoading = false; }
+}
+polls.subscribe(renderVoting);
 
 function prettyDate(date, options = { month: 'short', day: 'numeric' }) {
   // Calendar dates are deliberately formatted as UTC: there is no local-midnight shift.
@@ -44,6 +172,13 @@ function showDay(day, focus = false) {
     a.setAttribute('aria-label', `Read source post for day ${day} on X, opens a new tab`);
     detail.append(a);
   }
+  if (entry.status === 'pending') {
+    const note = document.createElement('p');
+    note.className = 'poll-pending-note';
+    note.textContent = 'Voting opens when this day has a published check-in. Select a recorded day above to see its poll.';
+    detail.append(note);
+  }
+  renderVoting();
 }
 
 function renderData() {
@@ -123,6 +258,7 @@ function setShare(state = null) {
 
 async function loadData() {
   if (loading) return;
+  if (polls.configPhase === 'error') loadVotingConfig();
   loading = true;
   $('retry').disabled = true;
   $('retry').setAttribute('aria-busy', 'true');
@@ -135,6 +271,7 @@ async function loadData() {
     if (!response.ok) throw new Error('Data could not be fetched');
     currentData = validateData(await response.json());
     renderData();
+    refreshVisiblePolls();
   } catch {
     $('data-status').textContent = currentData ? 'Refresh failed · showing the previous load' : 'Scoreboard data unavailable';
     $('data-explanation').textContent = 'The public data could not be loaded or validated. Please try refresh. No results have been assumed.';
@@ -229,6 +366,7 @@ function checkClock() {
   if (key !== clockKey) { clockKey = key; renderData(); }
 }
 setInterval(checkClock, 60000);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) checkClock(); });
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { checkClock(); refreshVisiblePolls(); } });
 setShare();
+loadVotingConfig();
 loadData();
