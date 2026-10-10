@@ -9,6 +9,8 @@ const ENTRY_KEYS = ["number", "summary", "tweetUrl", "postedAt", "announcedBy", 
 // Optional per-entry label, mirroring data.json's day status. Absent = unclassified.
 const ENTRY_OPTIONAL_KEYS = ["status"];
 const ENTRY_STATUSES = Object.freeze(["improvement", "reset"]);
+// Tibo's per-update list in versus.json, derived from data.json's numbered summaries.
+const TIBO_KEYS = ["number", "summary", "tweetUrl", "status"];
 const midnightCache = new Map();
 
 function fail(message) {
@@ -73,7 +75,7 @@ function validateTeam(raw, side) {
   if (typeof raw.avatar !== "string" || !/^assets\/[A-Za-z0-9_-]+\.(?:jpe?g|png|webp|gif|svg)$/.test(raw.avatar)) {
     fail(`${label} avatar must be a local assets image.`);
   }
-  const expectedSource = side === "dots" ? "data.json" : "versus.json#days[].grokbot";
+  const expectedSource = side === "dots" ? "versus.json#days[].tibo" : "versus.json#days[].grokbot";
   if (raw.entriesSource !== expectedSource) fail(`${label} entriesSource does not match the existing source schema.`);
   return Object.freeze(Object.fromEntries(TEAM_KEYS.map((key) => [key, raw[key]])));
 }
@@ -108,6 +110,58 @@ function validateGrokEntry(raw, day, index, timezone) {
   });
 }
 
+function validateTiboEntry(raw, day, index) {
+  const label = `Round ${day.day} Tibo entry ${index + 1}`;
+  assertRecord(raw, TIBO_KEYS, label);
+  if (typeof raw.number !== "string" || !new RegExp(`^${day.day}\\.[1-9]\\d*$`).test(raw.number)) {
+    fail(`${label} number must identify its round and update.`);
+  }
+  assertText(raw.summary, `${label} summary`, 1000);
+  assertSourceUrl(raw.tweetUrl, `${label} tweetUrl`, true);
+  if (!ENTRY_STATUSES.includes(raw.status)) fail(`${label} status must be one of: ${ENTRY_STATUSES.join(", ")}.`);
+  return Object.freeze({
+    number: raw.number,
+    summary: raw.summary,
+    tweetUrl: raw.tweetUrl,
+    sourceUrl: raw.tweetUrl,
+    postedAt: null,
+    announcedBy: null,
+    potetoUrl: null,
+    status: raw.status,
+    classification: raw.status,
+  });
+}
+
+/**
+ * Tibo's lane: one hit per listed improvement. data.json's day status stays the
+ * authority for pending/missed and for whether the day carried a usage reset.
+ * An improvement day with no per-update list is unclassified rather than guessed.
+ */
+function makeDotsLane(tibo, items, teams) {
+  if (tibo.status === "pending" || tibo.status === "missed") {
+    if (items.length) fail(`Round ${tibo.day} Tibo entries must be empty while data.json reports ${tibo.status}.`);
+    return makeLane([], tibo.status, tibo.status === "pending" ? 1 : 0);
+  }
+  if (tibo.status === "improvement" && items.some((entry) => entry.status === "reset")) {
+    fail(`Round ${tibo.day} Tibo reset entries require data.json to report a reset day.`);
+  }
+  // An improvement day must list its updates; a reset day with no list is a pure reset (0 hits).
+  const entries = items.length || tibo.status === "reset" ? [...items] : [Object.freeze({
+    number: String(tibo.day), summary: tibo.summary, tweetUrl: tibo.tweetUrl,
+    sourceUrl: tibo.tweetUrl ?? null, postedAt: null, announcedBy: teams.dots.handle, potetoUrl: null,
+    status: null, classification: "unknown",
+  })];
+  // A data.json reset day shows a reset marker unless an explicit reset entry already covers it.
+  if (tibo.status === "reset" && !items.some((entry) => entry.status === "reset")) {
+    entries.push(Object.freeze({
+      number: `${tibo.day}.R`, summary: tibo.summary,
+      tweetUrl: tibo.tweetUrl, sourceUrl: tibo.tweetUrl ?? null, postedAt: null, announcedBy: teams.dots.handle,
+      potetoUrl: null, status: "reset", classification: "reset", marker: true,
+    }));
+  }
+  return makeLane(entries, tibo.status);
+}
+
 function makeLane(entries, status, pending = 0) {
   const frozenEntries = Object.freeze(entries);
   const confirmedHits = entries.filter((entry) => entry.classification === "improvement").length;
@@ -129,10 +183,11 @@ function makeLane(entries, status, pending = 0) {
   });
 }
 
-/** Compare confirmed improvement records only. Resets never count as hits. */
+/** More improvements that day wins; ties draw; a pending or unclassified side is unresolved. Resets never count. */
 export function getRoundWinner(dots, bots) {
+  if (dots.pending || bots.pending) return "unresolved";
   if (dots.noMove && bots.noMove) return "draw";
-  if (!dots.classificationKnown || !bots.classificationKnown || dots.pending || bots.pending) return "unresolved";
+  if (!dots.classificationKnown || !bots.classificationKnown) return "unresolved";
   if (dots.confirmedHits === bots.confirmedHits) return "draw";
   return dots.confirmedHits > bots.confirmedHits ? "dots" : "bots";
 }
@@ -150,24 +205,15 @@ export function validateVersusData(rawTracker, rawVersus) {
   if (!Array.isArray(rawVersus.days) || rawVersus.days.length !== TOTAL_ROUNDS) fail("VERSUS days must contain exactly 28 rounds.");
   const days = rawVersus.days.map((rawDay, index) => {
     const tibo = tracker.days[index];
-    assertRecord(rawDay, ["day", "date", "grokbot"], `VERSUS round ${index + 1}`);
+    assertRecord(rawDay, ["day", "date", "tibo", "grokbot"], `VERSUS round ${index + 1}`);
     if (rawDay.day !== tibo.day || rawDay.date !== tibo.date) fail(`VERSUS round ${index + 1} must match data.json's day and date.`);
     if (!Array.isArray(rawDay.grokbot) || rawDay.grokbot.length > 100) fail(`VERSUS round ${index + 1} grokbot must be a list of at most 100 records.`);
+    if (!Array.isArray(rawDay.tibo) || rawDay.tibo.length > 100) fail(`VERSUS round ${index + 1} tibo must be a list of at most 100 records.`);
+    const tiboItems = rawDay.tibo.map((entry, entryIndex) => validateTiboEntry(entry, rawDay, entryIndex));
+    if (new Set(tiboItems.map((entry) => entry.number)).size !== tiboItems.length) fail(`VERSUS round ${index + 1} has duplicate Tibo update numbers.`);
     const grokEntries = rawDay.grokbot.map((entry, entryIndex) => validateGrokEntry(entry, rawDay, entryIndex, tracker.timezone));
     if (new Set(grokEntries.map((entry) => entry.number)).size !== grokEntries.length) fail(`VERSUS round ${index + 1} has duplicate update numbers.`);
-    const tiboEntries = tibo.status === "pending" ? [] : [Object.freeze({
-      // One typed day record is one classified entry; numbers in prose are not a schema.
-      number: String(tibo.day),
-      summary: tibo.summary,
-      tweetUrl: tibo.tweetUrl,
-      sourceUrl: tibo.tweetUrl ?? tracker.source,
-      postedAt: null,
-      announcedBy: teams.dots.handle,
-      potetoUrl: null,
-      status: tibo.status,
-      classification: tibo.status,
-    })];
-    const dots = makeLane(tiboEntries, tibo.status, tibo.status === "pending" ? 1 : 0);
+    const dots = makeDotsLane(tibo, tiboItems, teams);
     const botsStatus = !grokEntries.length ? "empty" : grokEntries.some((entry) => entry.classification === "unknown") ? "unclassified" : "reported";
     const bots = makeLane(grokEntries, botsStatus);
     return Object.freeze({ day: tibo.day, round: tibo.day, date: tibo.date, dots, bots, winner: getRoundWinner(dots, bots) });

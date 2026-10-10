@@ -355,7 +355,8 @@ def test_controls(browser, site):
     context, page = setup_context(browser, site)
     try:
         load(page, site)
-        dots_hits = sum(day["status"] == "improvement" for day in BASE_DATA["days"])
+        tibo = [entry for day in BASE_VERSUS["days"] for entry in day["tibo"]]
+        dots_hits = sum(e["status"] == "improvement" for e in tibo)
         dots_resets = sum(day["status"] == "reset" for day in BASE_DATA["days"])
         expect(page.locator("#hits-dots")).to_contain_text(str(dots_hits))
         expect(page.locator("#resets-dots")).to_contain_text(str(dots_resets))
@@ -366,7 +367,14 @@ def test_controls(browser, site):
         else:
             expect(page.locator("#hits-bots")).to_contain_text("?")
             expect(page.locator("#resets-bots")).to_contain_text("?")
-        passed("Typed Tibo day records and explicitly labelled Grok records render separate improvements/resets; untyped Grok records would stay unknown")
+        for index, day in enumerate(BASE_VERSUS["days"]):
+            for entry in day["tibo"] + day["grokbot"]:
+                expect(page.locator("#timeline")).to_contain_text(f"UPDATE {entry['number']}")
+            if BASE_DATA["days"][index]["status"] == "reset":
+                row = page.locator(f'.round-row[aria-label^="Round {index + 1},"]')
+                expect(row.locator(".round-lane.dots")).to_contain_text("USAGE RESET")
+                expect(row.locator(".round-lane.dots")).to_contain_text("RESET · NO HIT")
+        passed("Every listed Tibo and Grok update renders as one hit; usage resets show on their day without counting or zeroing launches")
     finally:
         context.close()
 
@@ -392,19 +400,21 @@ def test_data(browser, site):
         expect(page.locator("#data-status")).to_contain_text(re.compile(r"could not|unavailable|failed|error", re.I))
         failed[0] = False
         page.locator("#data-refresh").click()
-        expect(page.locator("#timeline")).to_contain_text(BASE_DATA["days"][0]["summary"])
+        expect(page.locator("#timeline")).to_contain_text(BASE_VERSUS["days"][0]["tibo"][0]["summary"])
         passed("Data fetch failure is visible and refresh recovers source records")
     finally:
         context.close()
 
     data = copy.deepcopy(BASE_DATA)
     versus = copy.deepcopy(BASE_VERSUS)
-    data["days"][0]["summary"] = "QA Tibo source sentinel: public data changed only in memory."
+    data["days"][1]["summary"] = "QA Tibo source sentinel: public data changed only in memory."
+    versus["days"][0]["tibo"][0]["summary"] = "QA Tibo update sentinel: companion data changed only in memory."
     versus["days"][0]["grokbot"][0]["summary"] = "QA Grok source sentinel: companion data changed only in memory."
     context, page = setup_context(browser, site, data=data, versus=versus)
     try:
         load(page, site)
-        expect(page.locator("#timeline")).to_contain_text(data["days"][0]["summary"])
+        expect(page.locator("#timeline")).to_contain_text(data["days"][1]["summary"])
+        expect(page.locator("#timeline")).to_contain_text(versus["days"][0]["tibo"][0]["summary"])
         expect(page.locator("#timeline")).to_contain_text(versus["days"][0]["grokbot"][0]["summary"])
         for filename in ("versus-app.js", "versus-model.js"):
             path = ROOT / filename
@@ -414,7 +424,7 @@ def test_data(browser, site):
                     if entry["summary"]:
                         assert entry["summary"] not in source, f"Hardcoded data summary in {filename}"
                 for day in BASE_VERSUS["days"]:
-                    for entry in day["grokbot"]:
+                    for entry in day["grokbot"] + day["tibo"]:
                         assert entry["summary"] not in source, f"Hardcoded Grok record in {filename}"
         passed("Tibo/Grok summaries are rendered from fetched data; authored UI/model contain no known hardcoded records")
     finally:
@@ -471,6 +481,9 @@ def test_time(browser, site):
     data["days"][0].update(status="improvement", summary="QA fixture: one explicitly classified improvement.")
     for day in versus["days"]:
         day["grokbot"] = []
+        day["tibo"] = []
+    versus["days"][0]["tibo"] = [{"number": "1.1", "summary": "QA fixture: one listed improvement.",
+                                  "tweetUrl": "https://x.com/thsottiaux/status/1", "status": "improvement"}]
     context, page = setup_context(browser, site, now="2026-11-02T08:00:00.000Z", data=data, versus=versus)
     try:
         load(page, site)

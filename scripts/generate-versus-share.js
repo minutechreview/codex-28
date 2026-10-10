@@ -57,7 +57,7 @@ function stat(label, value, confirmed) {
 }
 
 function fighter(side, team, totals, portrait) {
-  const note = totals.unclassified ? `${totals.unclassified} UNCLASSIFIED SOURCE RECORDS` : `${totals.pending} PENDING DAYS · EXPLICIT RECORDS`;
+  const note = totals.unclassified ? `${totals.unclassified} UNCLASSIFIED SOURCE RECORDS` : 'ONE HIT PER SHIPPED UPDATE';
   return `<article class="fighter ${side}">
     <div class="team"><b>${escapeHtml(team.team.toUpperCase())}</b><span>${side === 'dots' ? '1P' : '2P'}</span></div>
     <div class="player"><div class="portrait"><img src="${portrait}" alt="${escapeHtml(team.name)}"><span>${side === 'dots' ? '01' : '02'} / SELECTED</span></div>

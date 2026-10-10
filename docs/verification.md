@@ -31,7 +31,7 @@ Both data files, existing avatars, `model.js`, legacy CSS/JS/client/config, migr
 
 The existing Worker/D1 supports the new choices through isolated routes and additive storage; no replacement backend remains in the PR. Local SQLite tests and intercepted browser requests do not establish deployed Cloudflare runtime behavior, capacity or a live team feature. The setup checklist requires separate authorization and isolated runtime verification before a cloud change or publication.
 
-Optional provider device/IP rate-limiting code is mocked and remains unconfigured. Its limits are approximate per Cloudflare location; UUIDs do not establish one verified person. Grok's 11 entries now carry an explicit `status: "improvement"` label (optional field, validated to improvement/reset). No cloud changes, live migration, production test votes, merge or deploy occurred.
+Optional provider device/IP rate-limiting code is mocked and remains unconfigured. Its limits are approximate per Cloudflare location; UUIDs do not establish one verified person. Both sides are counted per listed update: `versus.json` `days[].tibo` (11 items from `data.json`'s numbered summaries) and `days[].grokbot` (11 labelled items); resets are shown separately and never count as hits. No cloud changes, live migration, production test votes, merge or deploy occurred.
 
 ## Library delivery
 

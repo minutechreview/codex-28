@@ -123,7 +123,7 @@
       "passed": true
     },
     {
-      "name": "Typed Tibo day records render separate improvements/resets; original untyped Grok records remain unknown",
+      "name": "Every listed Tibo and Grok update renders as one hit; usage resets show on their day without counting or zeroing launches",
       "passed": true
     },
     {
@@ -139,7 +139,7 @@
       "passed": true
     },
     {
-      "name": "Unknown Grok source fields fail strict validation; retry recovers original schema without inventing classification",
+      "name": "Unknown Grok source fields fail strict validation; retry recovers the source schema without inventing classification",
       "passed": true
     },
     {
@@ -215,7 +215,10 @@
       "passed": true
     }
   ],
-  "screenshots": [],
+  "screenshots": [
+    "output/playwright/versus-mobile-390.png",
+    "output/playwright/versus-desktop.png"
+  ],
   "pageErrors": [],
   "unexpectedRequests": [],
   "dataHashBefore": "d3afceec07918f307e4e391afa8e5b2d1c7f862ba50c3221e14ac6702578a926",

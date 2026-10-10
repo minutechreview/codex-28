@@ -27,20 +27,24 @@ function fixture() {
   const makeTeam = (side) => ({
     team: `Fixture ${side}`, name: `Player ${side}`, handle: `fixture_${side}`,
     profileUrl: `https://x.com/fixture_${side}`, role: "Fixture role", product: "Fixture product",
-    avatar: `assets/${side}.jpg`, entriesSource: side === "dots" ? "data.json" : "versus.json#days[].grokbot",
+    avatar: `assets/${side}.jpg`, entriesSource: side === "dots" ? "versus.json#days[].tibo" : "versus.json#days[].grokbot",
   });
   const versus = {
     startDate: tracker.startDate, endDate: tracker.endDate, timezone: tracker.timezone,
     teams: { dots: makeTeam("dots"), bots: makeTeam("bots") },
-    days: dates.map((date, index) => ({ day: index + 1, date, grokbot: [] })),
+    days: dates.map((date, index) => ({ day: index + 1, date, tibo: [], grokbot: [] })),
     updatedAt: "2026-10-10T22:24:48.000Z",
   };
   return { tracker, versus };
 }
 
-function dotsResult(raw, day, status, summary = "Explicit reported result") {
+function dotsResult(raw, day, status, summary = "Explicit reported result", improvements = status === "improvement" ? 1 : 0) {
   raw.tracker.updatedAt = "2026-11-02T08:00:00.000Z";
-  Object.assign(raw.tracker.days[day - 1], { status, summary, tweetUrl: `https://x.com/fixture_dots/status/${day}` });
+  const tweetUrl = `https://x.com/fixture_dots/status/${day}`;
+  Object.assign(raw.tracker.days[day - 1], { status, summary, tweetUrl });
+  raw.versus.days[day - 1].tibo = Array.from({ length: improvements }, (_, index) => ({
+    number: `${day}.${index + 1}`, summary: `Fixture Tibo update ${index + 1}`, tweetUrl, status: "improvement",
+  }));
 }
 
 function botsEntry(raw, day, classification, number = `${day}.${raw.versus.days[day - 1].grokbot.length + 1}`) {
@@ -55,7 +59,7 @@ function botsEntry(raw, day, classification, number = `${day}.${raw.versus.days[
 
 function validate(raw) { return validateVersusData(raw.tracker, raw.versus); }
 
-test("the repository's unchanged dual source schema validates without fabricating classification", async () => {
+test("the repository's dual source schema validates and counts one hit per listed update", async () => {
   const [tracker, versus] = await Promise.all([
     readFile(new URL("../data.json", import.meta.url), "utf8"),
     readFile(new URL("../versus.json", import.meta.url), "utf8"),
@@ -65,28 +69,64 @@ test("the repository's unchanged dual source schema validates without fabricatin
   const data = validateVersusData(rawTracker, rawVersus);
   assert.equal(data.days.length, TOTAL_ROUNDS);
   assert.deepEqual(data.teams, rawVersus.teams);
-  const expectedUnknown = rawVersus.days.flatMap((day) => day.grokbot).filter((entry) => entry.status === undefined && entry.type === undefined).length;
-  assert.equal(getVersusState(data).totals.bots.unclassified, expectedUnknown);
-  assert.equal(data.tracker.days.filter((day) => day.status === "improvement").length, getVersusState(data).totals.dots.confirmedHits);
+  const state = getVersusState(data);
+  const count = (side, status) => rawVersus.days.flatMap((day) => day[side]).filter((entry) => entry.status === status).length;
+  assert.equal(state.totals.bots.hits, count("grokbot", "improvement"));
+  assert.equal(state.totals.dots.hits, count("tibo", "improvement"));
+  assert.equal(state.totals.dots.resets, rawTracker.days.filter((day) => day.status === "reset").length);
+  assert.equal(state.totals.dots.unclassified, 0);
+  assert.equal(state.totals.bots.unclassified, 0);
+  for (const [index, day] of rawTracker.days.entries()) {
+    if (day.status === "pending") assert.equal(rawVersus.days[index].tibo.length, 0);
+    for (const entry of rawVersus.days[index].tibo) assert.equal(entry.tweetUrl, day.tweetUrl);
+  }
   assert.equal(JSON.stringify(rawTracker), JSON.stringify(JSON.parse(tracker)));
   assert.equal(JSON.stringify(rawVersus), JSON.stringify(JSON.parse(versus)));
 });
 
-test("typed day records count exactly once and numbered prose never turns resets into hits", () => {
+test("every listed Tibo update is a hit; a reset day shows a reset that never zeroes its launches", () => {
   const raw = fixture();
-  dotsResult(raw, 1, "improvement", "1.1 A ship; 1.2 Another ship; 1.3 Another ship.");
-  dotsResult(raw, 2, "reset", "A reset plus 2.1, 2.2, 2.3 and 2.4 ships.");
+  dotsResult(raw, 1, "improvement", "1.1 A ship; 1.2 Another ship; 1.3 Another ship.", 3);
+  dotsResult(raw, 2, "reset", "A reset plus 2.1, 2.2, 2.3 and 2.4 ships.", 4);
   dotsResult(raw, 3, "missed", "An explicitly reported missed day.");
   const data = validate(raw);
   const state = getVersusState(data, "2026-10-09T12:00:00Z");
-  assert.equal(state.totals.dots.hits, 1);
+  assert.equal(state.totals.dots.hits, 7);
   assert.equal(state.totals.dots.resets, 1);
   assert.equal(state.totals.dots.pending, 25);
-  assert.equal(state.totals.dots.reported, 3);
-  assert.equal(data.days[0].dots.entries[0].number, "1");
-  assert.equal(data.days[1].dots.hits, 0);
+  assert.deepEqual(data.days[0].dots.entries.map((entry) => entry.number), ["1.1", "1.2", "1.3"]);
+  assert.equal(data.days[1].dots.hits, 4);
   assert.equal(data.days[1].dots.resets, 1);
+  assert.equal(data.days[1].dots.entries.at(-1).marker, true);
   assert.equal(data.days[2].dots.hits, 0);
+  assert.equal(data.days[2].dots.noMove, true);
+});
+
+test("a reported Tibo day without a per-update list stays unclassified instead of guessed", () => {
+  const raw = fixture();
+  dotsResult(raw, 1, "improvement", "Prose only", 0);
+  botsEntry(raw, 1, "improvement");
+  const data = validate(raw);
+  assert.equal(data.days[0].dots.unclassified, 1);
+  assert.equal(data.days[0].dots.hits, null);
+  assert.equal(data.days[0].winner, "unresolved");
+});
+
+test("Tibo per-update lists must agree with data.json's day status", () => {
+  for (const mutate of [
+    (raw) => { raw.versus.days[0].tibo.push({ number: "1.1", summary: "x", tweetUrl: "https://x.com/fixture_dots/status/1", status: "improvement" }); },
+    (raw) => { dotsResult(raw, 1, "missed"); raw.versus.days[0].tibo.push({ number: "1.1", summary: "x", tweetUrl: "https://x.com/fixture_dots/status/1", status: "improvement" }); },
+    (raw) => { dotsResult(raw, 1, "improvement"); raw.versus.days[0].tibo[0].status = "reset"; },
+    (raw) => { dotsResult(raw, 1, "improvement"); raw.versus.days[0].tibo[0].status = "ship"; },
+    (raw) => { dotsResult(raw, 1, "improvement"); raw.versus.days[0].tibo[0].number = "2.1"; },
+    (raw) => { dotsResult(raw, 1, "improvement", "x", 2); raw.versus.days[0].tibo[1].number = "1.1"; },
+    (raw) => { dotsResult(raw, 1, "improvement"); raw.versus.days[0].tibo[0].extra = true; },
+    (raw) => { delete raw.versus.days[0].tibo; },
+  ]) {
+    const raw = fixture();
+    mutate(raw);
+    assert.throws(() => validate(raw), DataValidationError);
+  }
 });
 
 test("untyped Grok records remain unknown with separate confirmed counts", () => {
@@ -106,25 +146,28 @@ test("untyped Grok records remain unknown with separate confirmed counts", () =>
   assert.equal(getVersusState(data).totals.bots.confirmedHits, 0);
 });
 
-test("round winners compare confirmed improvements, while resets stay separate", () => {
+test("round winner is the side with more improvements that day; ties draw; pending is unresolved", () => {
   const raw = fixture();
-  dotsResult(raw, 1, "improvement");
-  dotsResult(raw, 2, "reset");
-  botsEntry(raw, 2);
-  dotsResult(raw, 3, "improvement");
-  botsEntry(raw, 3);
-  dotsResult(raw, 4, "reset");
+  dotsResult(raw, 1, "improvement", "x", 1);
+  botsEntry(raw, 1, "improvement");
+  dotsResult(raw, 2, "reset", "x", 4);
+  botsEntry(raw, 2, "improvement");
+  dotsResult(raw, 3, "reset", "x", 2);
+  for (let i = 0; i < 3; i += 1) botsEntry(raw, 3, "improvement");
+  dotsResult(raw, 4, "reset", "x", 0);
+  dotsResult(raw, 5, "missed");
+  botsEntry(raw, 6, "improvement");
   const data = validate(raw);
-  assert.deepEqual(data.days.slice(0, 4).map((day) => day.winner), ["dots", "unresolved", "unresolved", "draw"]);
+  assert.deepEqual(data.days.slice(0, 7).map((day) => day.winner), ["draw", "dots", "bots", "draw", "draw", "unresolved", "unresolved"]);
+  assert.equal(data.days[3].dots.resets, 1);
   assert.equal(data.days[4].dots.noMove, true);
   assert.equal(data.days[4].bots.noMove, true);
-  assert.equal(data.days[4].winner, "draw");
-  assert.equal(data.days[4].dots.status, "pending");
+  assert.equal(data.days[6].dots.status, "pending");
 });
 
 test("a pending side does not lose a populated round by inference", () => {
   const raw = fixture();
-  botsEntry(raw, 1);
+  botsEntry(raw, 1, "improvement");
   assert.equal(validate(raw).days[0].winner, "unresolved");
 });
 

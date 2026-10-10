@@ -43,7 +43,7 @@ function renderTeam(side, totals) {
   $(`health-${side}`).setAttribute('aria-label', `${team.name} daily community support health`);
   text(`hits-${side}`, count(totals.hits));
   text(`resets-${side}`, count(totals.resets));
-  text(`note-${side}`, totals.unclassified ? `${totals.unclassified} unclassified records · ${totals.confirmedHits} confirmed hits / ${totals.confirmedResets} resets` : `${totals.pending} pending days · explicit status records only`);
+  text(`note-${side}`, totals.unclassified ? `${totals.unclassified} unclassified records · ${totals.confirmedHits} confirmed hits / ${totals.confirmedResets} resets` : `${totals.pending} pending days · one hit per shipped update · resets never count`);
 }
 function laneNode(side, lane, round, currentDate) {
   const host = element('div', `round-lane ${side}`);
@@ -56,15 +56,19 @@ function laneNode(side, lane, round, currentDate) {
   for (const entry of lane.entries) {
     const move = element('article', 'move');
     const header = element('div', 'move-header');
-    header.append(element('b', '', side === 'dots' ? `DAY ${entry.number} RECORD` : `UPDATE ${entry.number}`), element('span', '', entry.classification === 'unknown' ? 'UNCLASSIFIED' : entry.status.toUpperCase()));
+    if (entry.marker) move.classList.add('reset-marker');
+    const heading = entry.marker ? 'USAGE RESET' : entry.classification === 'unknown' ? `DAY ${entry.number} RECORD` : `UPDATE ${entry.number}`;
+    const tag = entry.classification === 'unknown' ? 'UNCLASSIFIED' : entry.status === 'reset' ? 'RESET · NO HIT' : 'HIT';
+    header.append(element('b', '', heading), element('span', '', tag));
     move.append(header, element('p', '', entry.summary));
     if (entry.sourceUrl) move.append(sourceLink(entry.sourceUrl, 'SOURCE ↗'));
     if (entry.potetoUrl && entry.potetoUrl !== entry.sourceUrl) move.append(sourceLink(entry.potetoUrl, '@POTETO ↗'));
-    if (side === 'dots') {
-      const updatePoll = updatePolls.nodeFor(data.tracker.days[round.day - 1], currentDate);
-      if (updatePoll) move.append(updatePoll);
-    }
     host.append(move);
+  }
+  // One approval poll per Tibo day record, after that day's updates.
+  if (side === 'dots' && lane.entries.length) {
+    const updatePoll = updatePolls.nodeFor(data.tracker.days[round.day - 1], currentDate);
+    if (updatePoll) host.append(updatePoll);
   }
   return host;
 }
@@ -77,7 +81,7 @@ function renderTimeline(state) {
     const result = element('div', 'round-result');
     const label = round.winner === 'unresolved' ? 'UNRESOLVED' : round.winner === 'draw' ? 'DRAW' : `${teamName(round.winner)} WINS`;
     result.append(element('p', 'round-tag', `ROUND ${String(round.day).padStart(2, '0')}`), element('p', 'round-date', prettyDate(round.date).toUpperCase()), element('strong', '', label));
-    if (round.winner === 'unresolved') result.append(element('small', '', 'Classification incomplete'));
+    if (round.winner === 'unresolved') result.append(element('small', '', round.dots.pending || round.bots.pending ? (round.date > state.currentDate ? 'Future round' : 'Pending day') : 'Classification incomplete'));
     else if (round.date > state.currentDate) result.append(element('small', '', 'Future round'));
     else if (round.date === state.currentDate) result.append(element('small', '', 'Round in progress'));
     row.append(laneNode('dots', round.dots, round, state.currentDate), result, laneNode('bots', round.bots, round, state.currentDate));
@@ -101,7 +105,7 @@ function renderData() {
   else if (final.status === 'draw') text('finale', 'FINAL DRAW · EQUAL RECORDED HITS');
   else if (final.status === 'unresolved') text('finale', 'WINDOW CLOSED · RESULT UNRESOLVED · RECORDS INCOMPLETE');
   const ages = [freshness(data.tracker).status, freshness({updatedAt:data.updatedAt}).status];
-  text('data-status', `SOURCE RECORDS · Tibo ${data.tracker.updatedAt} · Grok ${data.updatedAt}. ${ages.includes('future') ? 'Timestamp ahead of the clock.' : ages.includes('stale') ? 'Data may be stale.' : 'Loaded.'} ${state.totals.bots.unclassified ? 'Grok classifications missing; winner unresolved.' : ''}`);
+  text('data-status', `SOURCE RECORDS · Tibo ${data.tracker.updatedAt} · Grok ${data.updatedAt}. ${ages.includes('future') ? 'Timestamp ahead of the clock.' : ages.includes('stale') ? 'Data may be stale.' : 'Loaded.'} ${state.totals.dots.unclassified || state.totals.bots.unclassified ? 'Some updates are unclassified; affected rounds unresolved.' : ''}`);
   const page = new URL(location.href); page.search = ''; page.hash = '';
   const share = new URL('https://twitter.com/intent/tweet');
   share.searchParams.set('url', page.href);
