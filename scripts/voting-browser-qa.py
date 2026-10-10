@@ -140,8 +140,9 @@ def main():
             select_day(page, 5)
             expect(page.locator("#day-poll")).to_be_hidden()
             expect(page.locator(f'.visitor-poll[data-poll-id="{poll_id(5)}"]')).to_have_count(0)
-            expect(page.locator("#day-detail")).to_contain_text("Voting opens")
-            passed("Published days 1–4 have separate stable polls; pending day5 has no poll")
+            expect(page.locator('.day-button[data-day="5"]')).to_have_attribute("data-future", "true")
+            expect(page.locator("#day-detail")).to_contain_text(BASE_DATA["days"][4]["summary"])
+            passed("Published days 1–4 have separate stable polls; future day5 has no poll despite its source result")
 
             select_day(page, 1)
             poll = page.locator("#day-poll")

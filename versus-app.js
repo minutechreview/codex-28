@@ -1,6 +1,7 @@
 import { validateVersusData, getVersusState, getHealth, healthTone, shouldFlashHealth, getMidnightCountdown } from './versus-model.js';
 import { freshness } from './model.js';
 import { validateVersusConfig, VersusPollStore } from './versus-poll.js';
+import { UpdatePolls } from './versus-update-polls.js';
 
 const $ = id => document.getElementById(id);
 const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -10,6 +11,7 @@ let lastVotes = null;
 let storage = null;
 try { storage = window.localStorage; } catch { /* Read-only poll mode. */ }
 const poll = new VersusPollStore({ storage, locks: navigator.locks });
+const updatePolls = new UpdatePolls({ onReloadData: () => loadData() });
 const count = value => value === null ? '?' : String(value);
 const text = (id, value) => { $(id).textContent = value; };
 const prettyDate = date => new Intl.DateTimeFormat('en-US', { month: 'short', day: '2-digit', timeZone: 'UTC' }).format(new Date(`${date}T12:00:00Z`));
@@ -33,6 +35,7 @@ function renderTeam(side, totals) {
   text(`health-name-${side}`, team.name);
   text(`handle-${side}`, `@${team.handle}`);
   text(`product-${side}`, team.product);
+  text(`role-${side}`, team.role);
   $(`portrait-${side}`).src = new URL(team.avatar, import.meta.url).href;
   $(`portrait-${side}`).alt = team.name;
   $(`source-${side}`).href = team.profileUrl;
@@ -42,7 +45,7 @@ function renderTeam(side, totals) {
   text(`resets-${side}`, count(totals.resets));
   text(`note-${side}`, totals.unclassified ? `${totals.unclassified} unclassified records · ${totals.confirmedHits} confirmed hits / ${totals.confirmedResets} resets` : `${totals.pending} pending days · explicit status records only`);
 }
-function laneNode(side, lane) {
+function laneNode(side, lane, round, currentDate) {
   const host = element('div', `round-lane ${side}`);
   host.append(element('p', 'lane-summary', `${teamName(side)} · ${count(lane.hits)} HITS / ${count(lane.resets)} RESETS${lane.unclassified ? ` · ${lane.unclassified} UNCLASSIFIED` : ''}`));
   if (!lane.entries.length) {
@@ -57,6 +60,10 @@ function laneNode(side, lane) {
     move.append(header, element('p', '', entry.summary));
     if (entry.sourceUrl) move.append(sourceLink(entry.sourceUrl, 'SOURCE ↗'));
     if (entry.potetoUrl && entry.potetoUrl !== entry.sourceUrl) move.append(sourceLink(entry.potetoUrl, '@POTETO ↗'));
+    if (side === 'dots') {
+      const updatePoll = updatePolls.nodeFor(data.tracker.days[round.day - 1], currentDate);
+      if (updatePoll) move.append(updatePoll);
+    }
     host.append(move);
   }
   return host;
@@ -73,11 +80,12 @@ function renderTimeline(state) {
     if (round.winner === 'unresolved') result.append(element('small', '', 'Classification incomplete'));
     else if (round.date > state.currentDate) result.append(element('small', '', 'Future round'));
     else if (round.date === state.currentDate) result.append(element('small', '', 'Round in progress'));
-    row.append(laneNode('dots', round.dots), result, laneNode('bots', round.bots));
+    row.append(laneNode('dots', round.dots, round, state.currentDate), result, laneNode('bots', round.bots, round, state.currentDate));
     $('timeline').append(row);
   }
   text('show-all', allRounds ? 'RECORDED ROUNDS ↑' : 'ALL 28 ROUNDS ↓');
   $('show-all').setAttribute('aria-pressed', String(allRounds));
+  updatePolls.renderVisible();
 }
 function renderData() {
   const state = getVersusState(data);
@@ -115,6 +123,7 @@ async function loadData() {
     const [tibo, versus] = await Promise.all([fetchJson('./data.json', controller.signal), fetchJson('./versus.json', controller.signal)]);
     data = validateVersusData(tibo, versus);
     renderData();
+    updatePolls.refreshVisible();
   } catch {
     text('data-status', data ? 'Refresh failed · previous source records remain visible. Try again.' : 'Data unavailable · no results assumed. Refresh to retry.');
     if (!data) { text('round-number', '--'); text('timeline', 'Source records unavailable. No results assumed.'); }
@@ -166,7 +175,7 @@ function renderPoll() {
   else if (phase === 'submitting') message = 'SAVING · Waiting for the server to confirm your vote…';
   else if (phase === 'closed') message = 'MATCH CLOSED · Team voting is open only during the 28-day window.';
   else if (phase === 'storage-error') message = 'DEVICE STORAGE REQUIRED · Enable persistent storage and reload to vote.';
-  else if (phase === 'read-error' && poll.errorStatus === 429) message = 'RATE LIMITED · Anonymous sign-in is busy. Wait before retrying.';
+  else if (phase === 'read-error' && poll.errorStatus === 429) message = 'RATE LIMITED · The voting service is busy. Wait before retrying.';
   else if (phase === 'read-error') message = result ? 'REFRESH FAILED · Last loaded counts shown. Check status to retry.' : 'RESULTS UNAVAILABLE · Check status to retry.';
   else if (phase === 'vote-error') message = poll.errorStatus === 429 ? 'RATE LIMITED · Wait a moment, then retry the same side.' : 'VOTE UNCONFIRMED · It may have saved. Check status before retrying the same side.';
   else if (phase === 'ready') message = result?.yourVote ? `LOCKED IN · ${teamName(result.yourVote)} · Your device has voted for ${result.day} PT.` : 'MATCH OPEN · Choose a side. One saved device identity per Pacific day.';
@@ -197,11 +206,11 @@ function tick() {
   text('countdown', clock.label);
   if (clock.currentDate !== lastDate) { renderData(); poll.refresh(); }
 }
-$('data-refresh').addEventListener('click', () => { loadData(); if (poll.phase === 'coming-soon') loadPollConfig(); });
+$('data-refresh').addEventListener('click', () => { loadData(); if (poll.phase === 'coming-soon') loadPollConfig(); if (updatePolls.store.configPhase === 'error') updatePolls.loadConfig(); });
 $('show-all').addEventListener('click', () => { allRounds = !allRounds; if (data) renderTimeline(getVersusState(data)); });
 $('vote-dots').addEventListener('click', () => poll.vote('dots'));
 $('vote-bots').addEventListener('click', () => poll.vote('bots'));
-$('poll-refresh').addEventListener('click', async () => { await poll.refresh(); if (['ready','vote-error'].includes(poll.phase) && !poll.result?.yourVote && poll.pendingTeam) await poll.vote(poll.pendingTeam); });
+$('poll-refresh').addEventListener('click', async () => { await poll.refresh(); if (['ready','vote-error'].includes(poll.phase) && poll.errorStatus === null && !poll.result?.yourVote && poll.pendingTeam) await poll.vote(poll.pendingTeam); });
 $('sound-toggle').addEventListener('click', async () => {
   if (muted) {
     try { audio ||= new (window.AudioContext || window.webkitAudioContext)(); await audio.resume(); muted = false; }
@@ -218,5 +227,5 @@ $('copy-link').addEventListener('click', async () => {
 poll.subscribe(renderPoll);
 setInterval(tick, 1000);
 setInterval(() => { if (!document.hidden && poll.phase !== 'coming-soon') poll.refresh(); }, 15000);
-document.addEventListener('visibilitychange', () => { if (!document.hidden) { tick(); if (poll.phase !== 'coming-soon') poll.refresh(); } });
-renderPoll(); loadData(); loadPollConfig();
+document.addEventListener('visibilitychange', () => { if (!document.hidden) { tick(); if (poll.phase !== 'coming-soon') poll.refresh(); updatePolls.refreshVisible(); } });
+renderPoll(); loadData(); loadPollConfig(); updatePolls.loadConfig();

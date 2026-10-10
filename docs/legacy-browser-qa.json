@@ -1,0 +1,127 @@
+{
+  "checks": [
+    {
+      "name": "Owner's published day4 opens today's poll; original update and artwork load",
+      "passed": true
+    },
+    {
+      "name": "Published days 1\u20134 have separate stable polls; future day5 has no poll despite its source result",
+      "passed": true
+    },
+    {
+      "name": "Vote persists through refresh; browser stores only an identifier",
+      "passed": true
+    },
+    {
+      "name": "Another tab in the same browser sees the recorded choice without adding a vote",
+      "passed": true
+    },
+    {
+      "name": "Separate browsers share persistent counts and percentages",
+      "passed": true,
+      "detail": {
+        "day1": {
+          "approve": 1,
+          "notConvinced": 1,
+          "total": 2
+        }
+      }
+    },
+    {
+      "name": "Arrow-key day navigation and Enter voting work; historical polls retain separate results",
+      "passed": true
+    },
+    {
+      "name": "Same-day edits retain results; Pacific rollover opens owner's day4 poll while preserving day3 history",
+      "passed": true
+    },
+    {
+      "name": "Future day has no poll even if a client fixture contains an outcome",
+      "passed": true
+    },
+    {
+      "name": "Lost POST response retries the original choice idempotently after real database commit",
+      "passed": true
+    },
+    {
+      "name": "GET failure shows no fabricated zero; recovery works and stale counts are explicitly labeled",
+      "passed": true
+    },
+    {
+      "name": "Blocked browser storage disables voting while retaining readable shared results",
+      "passed": true
+    },
+    {
+      "name": "Test-only null service config presents an honest unavailable state with no pretend results",
+      "passed": true
+    },
+    {
+      "name": "320px/390px mobile views preserve artwork, avoid overflow, and have 44px poll touch targets",
+      "passed": true,
+      "detail": [
+        {
+          "viewport": 320,
+          "pollButtons": [
+            {
+              "text": "Approve",
+              "width": 111,
+              "height": 44
+            },
+            {
+              "text": "Not convinced",
+              "width": 111,
+              "height": 44
+            },
+            {
+              "text": "Refresh results",
+              "width": 102.09375,
+              "height": 44
+            }
+          ],
+          "horizontalOverflow": false
+        },
+        {
+          "viewport": 390,
+          "pollButtons": [
+            {
+              "text": "Approve",
+              "width": 136,
+              "height": 44
+            },
+            {
+              "text": "Not convinced",
+              "width": 136,
+              "height": 44
+            },
+            {
+              "text": "Refresh results",
+              "width": 102.09375,
+              "height": 44
+            }
+          ],
+          "horizontalOverflow": false
+        }
+      ]
+    },
+    {
+      "name": "No uncaught browser errors; only deliberate unavailable/lost-response network errors",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    "output/voting/desktop-history-shared-results.png",
+    "output/voting/desktop-published-today.png",
+    "output/voting/desktop-results-unavailable.png",
+    "output/voting/mobile-320-shared-results.png",
+    "output/voting/mobile-390-shared-results.png"
+  ],
+  "consoleErrors": [
+    "Failed to load resource: net::ERR_FAILED",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)",
+    "Failed to load resource: the server responded with a status of 503 (Service Unavailable)"
+  ],
+  "pageErrors": [],
+  "browser": "148.0.7778.96",
+  "passed": true
+}

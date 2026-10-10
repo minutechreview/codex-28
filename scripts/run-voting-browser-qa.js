@@ -24,10 +24,18 @@ try {
   const publicRoot = join(temporary, 'site');
   await mkdir(publicRoot);
   await cp(join(root, 'dist'), join(publicRoot, 'codex-28'), { recursive: true });
+  // Regression-check the preserved original approval UI in the same isolated fixture.
+  // These compatibility files are copied only here, never into the public build.
+  for (const file of ['legacy/index.html', 'app.js', 'styles.css', 'assets/favicon.svg',
+    'assets/blue-dot.png', 'assets/green-dot.png', 'assets/yellow-dot.png', 'assets/pink-dot.png']) {
+    const target = join(publicRoot, 'codex-28', file);
+    await mkdir(join(target, '..'), { recursive: true });
+    await cp(join(root, file), target);
+  }
   const staticServer = start('python3', ['-m', 'http.server', '4173', '--bind', '127.0.0.1', '--directory', publicRoot]);
   const api = start(process.execPath, ['scripts/voting-dev-server.js'], { VOTING_DEV_DB: join(temporary, 'votes.sqlite'), VOTING_DEV_PORT: '8787', VOTING_DEV_NOW: '2026-10-08T20:09:00.000Z' });
   await Promise.all([ready('http://127.0.0.1:4173/codex-28/', staticServer), ready('http://127.0.0.1:8787/', api)]);
-  const browser = start('python3', ['scripts/voting-browser-qa.py'], { VOTING_SITE_URL: 'http://127.0.0.1:4173/codex-28/' });
+  const browser = start('python3', ['scripts/voting-browser-qa.py'], { VOTING_SITE_URL: 'http://127.0.0.1:4173/codex-28/legacy/' });
   process.exitCode = await new Promise((resolve, reject) => { browser.once('exit', code => resolve(code ?? 1)); browser.once('error', reject); });
 } finally {
   await Promise.all(processes.filter(child => child.exitCode === null).map(child => new Promise(resolve => { child.once('exit', resolve); child.kill('SIGTERM'); })));

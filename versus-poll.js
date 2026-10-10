@@ -1,36 +1,23 @@
-// Proposed Supabase team poll. The existing Cloudflare approval poll is independent.
-export const TEAM_CHOICES = Object.freeze(['dots', 'bots']);
-export const SESSION_KEY = 'codex-28-versus-session-v1';
-export const DAY_CHOICE_KEY = 'codex-28-versus-choice-v1';
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
-const LOOPBACK = new Set(['localhost', '127.0.0.1', '[::1]']);
+// Daily team support uses isolated Worker/D1 routes. Approval polls stay independent.
+import { browserIdentity, validateVotingConfig, VOTER_STORAGE_KEY } from './polls.js';
+import { dateInTimezone } from './model.js';
 
+export const TEAM_CHOICES = Object.freeze(['dots', 'bots']);
+export const DAY_CHOICE_KEY = 'codex-28-versus-choice-v1';
+export const DEVICE_LOCK_KEY = VOTER_STORAGE_KEY;
+const PACIFIC_TIMEZONE = 'America/Los_Angeles';
+
+/** The same safe URL validation as the existing update polls; null stays COMING SOON. */
 export function validateVersusConfig(raw, pageUrl = globalThis.location?.href) {
-  if (!raw || typeof raw !== 'object' || Array.isArray(raw) || Object.keys(raw).length !== 2
-      || !Object.hasOwn(raw, 'supabaseUrl') || !Object.hasOwn(raw, 'publishableKey')) {
-    throw new TypeError('Invalid team poll configuration.');
-  }
-  if (raw.supabaseUrl === null && raw.publishableKey === null) return Object.freeze({ ...raw });
-  if (typeof raw.supabaseUrl !== 'string' || raw.supabaseUrl.trim() !== raw.supabaseUrl
-      || /\s/.test(raw.supabaseUrl) || typeof raw.publishableKey !== 'string'
-      || !/^sb_publishable_[A-Za-z0-9_-]{16,200}$/.test(raw.publishableKey)) {
-    throw new TypeError('Use only a public Supabase project URL and publishable key.');
-  }
-  const url = new URL(raw.supabaseUrl);
-  const page = new URL(pageUrl);
-  const hosted = url.protocol === 'https:' && /^[a-z0-9-]+\.supabase\.co$/.test(url.hostname);
-  const local = url.protocol === 'http:' && LOOPBACK.has(url.hostname) && LOOPBACK.has(page.hostname);
-  if ((!hosted && !local) || url.username || url.password || url.search || url.hash || url.pathname !== '/') {
-    throw new TypeError('Use a secure Supabase origin (or loopback for local testing).');
-  }
-  return Object.freeze({ supabaseUrl: url.origin, publishableKey: raw.publishableKey });
+  return validateVotingConfig(raw, pageUrl);
 }
 
-export function validateVersusResult(raw) {
+export function validateVersusResult(raw, expectedDay = null) {
   const realDay = typeof raw?.day === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(raw.day)
     && Number.isFinite(Date.parse(`${raw.day}T12:00:00Z`))
     && new Date(`${raw.day}T12:00:00Z`).toISOString().slice(0, 10) === raw.day;
-  if (!raw || Array.isArray(raw) || !realDay || typeof raw.open !== 'boolean'
+  if (!raw || Array.isArray(raw) || !realDay || (expectedDay && raw.day !== expectedDay)
+      || typeof raw.open !== 'boolean'
       || ![raw.dotsVotes, raw.botsVotes, raw.totalVotes].every(n => Number.isSafeInteger(n) && n >= 0)
       || !Number.isSafeInteger(raw.dotsVotes + raw.botsVotes)
       || raw.dotsVotes + raw.botsVotes !== raw.totalVotes
@@ -69,32 +56,28 @@ function defaultStorage() {
   try { return globalThis.localStorage; } catch { return null; }
 }
 
-function savedSession(raw) {
-  if (!raw || !UUID.test(raw.userId) || !Number.isSafeInteger(raw.expiresAt)
-      || !['accessToken', 'refreshToken'].every(key => typeof raw[key] === 'string'
-        && raw[key].length > 0 && raw[key].length < 16384 && !/\s/.test(raw[key]))) {
-    throw new StorageError('The saved anonymous identity needs attention.');
-  }
-  return raw;
-}
-
-/** Counts are server-owned. Local storage only retains identity and daily choice hints. */
+/** Counts are server-owned. Storage retains the existing UUID and daily choice hints only. */
 export class VersusPollStore {
   constructor({ fetchImpl = globalThis.fetch, storage = defaultStorage(), locks = globalThis.navigator?.locks,
-    now = () => new Date(), timeoutMs = 10000 } = {}) {
+    cryptoImpl = globalThis.crypto, identity = null, now = () => new Date(), timeoutMs = 10000 } = {}) {
     this.fetchImpl = fetchImpl.bind(globalThis); this.storage = storage; this.locks = locks;
-    this.now = now; this.timeoutMs = timeoutMs; this.config = null;
+    this.cryptoImpl = cryptoImpl; this.identity = identity; this.now = now; this.timeoutMs = timeoutMs;
+    this.config = null; this.configVersion = 0;
     this.phase = 'coming-soon'; this.result = null; this.pendingTeam = null;
     this.errorStatus = null; this.errorCode = null; this.operation = null; this.listeners = new Set();
   }
   subscribe(listener) { this.listeners.add(listener); return () => this.listeners.delete(listener); }
   emit() { for (const listener of this.listeners) listener(); }
-  setConfig(config) {
-    this.config = config; this.phase = config.supabaseUrl ? 'idle' : 'coming-soon'; this.emit();
+  setIdentity(identity) { this.identity = identity; }
+  setConfig(config, identity = this.identity) {
+    this.configVersion += 1; this.config = config; this.identity = identity;
+    this.phase = config.apiBaseUrl ? 'idle' : 'coming-soon';
+    this.result = null; this.pendingTeam = null; this.errorStatus = null; this.errorCode = null; this.emit();
   }
+  configure(config, identity = this.identity) { this.setConfig(config, identity); }
   configFailed() { this.phase = 'read-error'; this.errorCode = 'configuration'; this.emit(); }
-  get sessionKey() { return `${SESSION_KEY}:${this.config.supabaseUrl}`; }
-  choiceKey(day) { return `${DAY_CHOICE_KEY}:${this.config.supabaseUrl}:${day}`; }
+  currentDay() { return dateInTimezone(this.now(), PACIFIC_TIMEZONE); }
+  choiceKey(day, config = this.config) { return `${DAY_CHOICE_KEY}:${config.apiBaseUrl}:${day}`; }
   readStorage(key) {
     try { return this.storage.getItem(key); } catch { throw new StorageError('Browser storage is unavailable.'); }
   }
@@ -104,76 +87,67 @@ export class VersusPollStore {
       if (this.storage.getItem(key) !== value) throw new Error('Storage did not persist.');
     } catch { throw new StorageError('Browser storage is unavailable.'); }
   }
-  readChoice(day) {
-    const value = this.readStorage(this.choiceKey(day));
+  readChoice(day, config = this.config) {
+    const value = this.readStorage(this.choiceKey(day, config));
     if (!value) return null;
     try {
       const choice = JSON.parse(value);
-      if (!TEAM_CHOICES.includes(choice.team) || !['pending', 'confirmed'].includes(choice.phase)) throw new Error();
+      if (!choice || Object.keys(choice).length !== 2 || !TEAM_CHOICES.includes(choice.team)
+          || !['pending', 'confirmed'].includes(choice.phase)) throw new Error();
       return choice;
     } catch { throw new StorageError('The saved daily choice is invalid.'); }
   }
-  async request(path, body, accessToken) {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
-    try {
-      const response = await this.fetchImpl(`${this.config.supabaseUrl}${path}`, {
-        method: 'POST', credentials: 'omit', cache: 'no-store', signal: controller.signal,
-        headers: { 'Content-Type': 'application/json', apikey: this.config.publishableKey,
-          ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}) }, body: JSON.stringify(body),
-      });
-      if (!response.ok) {
-        let code = 'unconfirmed';
-        try { code = (await response.json()).code || code; } catch { /* No untrusted server text in the UI. */ }
-        throw new VersusRequestError(response.status, code);
-      }
-      return await response.json();
-    } finally { clearTimeout(timeout); }
-  }
-  async withSession(callback) {
-    // An anonymous identity must not split into two accounts when two tabs first open together.
+  async withIdentity(callback) {
     if (!this.storage || typeof this.locks?.request !== 'function') {
       throw new StorageError('Voting needs persistent browser storage and Web Locks.');
     }
-    return this.locks.request(this.sessionKey, { mode: 'exclusive', signal: AbortSignal.timeout(this.timeoutMs) }, async () => {
-      const raw = this.readStorage(this.sessionKey);
-      let session;
-      if (raw) {
-        try { session = savedSession(JSON.parse(raw)); } catch { throw new StorageError('The saved identity is invalid.'); }
+    return this.locks.request(DEVICE_LOCK_KEY, { mode: 'exclusive', signal: AbortSignal.timeout(this.timeoutMs) }, async () => {
+      const identity = browserIdentity(this.storage, this.cryptoImpl);
+      if (!identity.available || (this.identity && (!this.identity.available || this.identity.voterId !== identity.voterId))) {
+        throw new StorageError('The saved browser identity is unavailable or changed.');
       }
-      if (!session || session.expiresAt <= Math.floor(this.now().getTime() / 1000) + 60) {
-        // Verify persistence before making a signup request. Never replace a failed/expired identity.
-        this.saveStorage(`${this.sessionKey}:storage-check`, '1');
-        session = await this.refreshSession(session);
-      }
-      return callback(session);
+      this.identity = identity;
+      return callback(identity);
     });
   }
-  async refreshSession(previous) {
-    const refreshed = await this.request(previous ? '/auth/v1/token?grant_type=refresh_token' : '/auth/v1/signup',
-      previous ? { refresh_token: previous.refreshToken } : { data: {} });
-    const expiry = refreshed.expires_at ?? Math.floor(this.now().getTime() / 1000) + refreshed.expires_in;
-    const next = savedSession({ userId: refreshed.user?.id, accessToken: refreshed.access_token,
-      refreshToken: refreshed.refresh_token, expiresAt: expiry });
-    if (previous && next.userId !== previous.userId) throw new VersusRequestError(0, 'identity_changed');
-    this.saveStorage(this.sessionKey, JSON.stringify(next)); return next;
+  async request(day, identity, choice = null, config = this.config) {
+    const url = new URL(`${config.apiBaseUrl}/teams/${encodeURIComponent(day)}`);
+    if (!choice) url.searchParams.set('voterId', identity.voterId);
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), this.timeoutMs);
+    try {
+      const response = await this.fetchImpl(url.href, {
+        method: choice ? 'POST' : 'GET', credentials: 'omit', cache: 'no-store', signal: controller.signal,
+        ...(choice ? { headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ voterId: identity.voterId, choice }) } : {}),
+      });
+      if (!response.ok && response.status !== 409) {
+        let code = 'unconfirmed';
+        try {
+          const error = await response.json();
+          const candidate = typeof error.error === 'string' ? error.error : error.error?.code;
+          if (typeof candidate === 'string' && /^[a-z_]{1,80}$/i.test(candidate)) code = candidate;
+        } catch { /* No untrusted server message is rendered. */ }
+        throw new VersusRequestError(response.status, code);
+      }
+      const result = validateVersusResult(await response.json(), day);
+      if (!response.ok && !(choice && response.status === 409 && result.accepted === false && result.yourVote)) {
+        throw new VersusRequestError(response.status);
+      }
+      if (choice && (!result.open || typeof result.accepted !== 'boolean' || !result.yourVote
+          || (result.accepted && result.yourVote !== choice))) {
+        throw new VersusRequestError(0, 'invalid_confirmation');
+      }
+      return result;
+    } finally { clearTimeout(timeout); }
   }
-  async rpc(path, body, session) {
-    try { return await this.request(path, body, session.accessToken); }
-    catch (error) {
-      if (error.status !== 401) throw error;
-      // A skewed browser clock must not strand a still-refreshable identity. Retry once only.
-      const refreshed = await this.refreshSession(session);
-      return this.request(path, body, refreshed.accessToken);
-    }
-  }
-  reconcile(result) {
-    this.result = result;
+  reconcile(result, config = this.config) {
+    this.result = result; this.errorStatus = null; this.errorCode = null;
     if (result.yourVote) {
-      this.saveStorage(this.choiceKey(result.day), JSON.stringify({ team: result.yourVote, phase: 'confirmed' }));
+      this.saveStorage(this.choiceKey(result.day, config), JSON.stringify({ team: result.yourVote, phase: 'confirmed' }));
       this.pendingTeam = null;
     } else {
-      const local = this.readChoice(result.day);
+      const local = this.readChoice(result.day, config);
       this.pendingTeam = local?.team ?? null;
       if (local?.phase === 'confirmed') this.errorCode = 'device_already_voted';
     }
@@ -182,43 +156,78 @@ export class VersusPollStore {
   failed(error, voting = false) {
     this.errorStatus = error.status || 0; this.errorCode = error.code || null;
     this.phase = error instanceof StorageError ? 'storage-error'
-      : error.code === 'P0001' ? 'closed' : voting ? 'vote-error' : 'read-error';
+      : [404, 410].includes(error.status) ? 'closed' : voting || this.pendingTeam ? 'vote-error' : 'read-error';
+  }
+  async readCurrent(identity, config, version) {
+    // A response crossing PT midnight never installs the previous day's counts.
+    for (let attempt = 0; attempt < 2; attempt += 1) {
+      if (version !== this.configVersion) return;
+      const day = this.currentDay();
+      let result;
+      try { result = await this.request(day, identity, null, config); }
+      catch (error) {
+        if (version !== this.configVersion) return;
+        if (day !== this.currentDay()) continue;
+        throw error;
+      }
+      if (version !== this.configVersion) return;
+      if (day !== this.currentDay()) continue;
+      this.reconcile(result, config); return;
+    }
+    throw new VersusRequestError(0, 'day_changed');
   }
   load() { return this.refresh(); }
   refresh() {
-    if (!this.config?.supabaseUrl) return Promise.resolve();
+    if (!this.config?.apiBaseUrl) return Promise.resolve();
     if (this.operation) return this.operation;
+    const config = this.config, version = this.configVersion;
+    if (this.result && this.result.day !== this.currentDay()) { this.result = null; this.pendingTeam = null; }
     this.phase = 'loading'; this.errorStatus = null; this.errorCode = null;
-    this.operation = this.withSession(async session => {
-      this.reconcile(validateVersusResult(await this.rpc('/rest/v1/rpc/versus_results', {}, session)));
-    }).catch(error => this.failed(error)).finally(() => { this.operation = null; this.emit(); });
+    this.operation = this.withIdentity(identity => this.readCurrent(identity, config, version))
+      .catch(error => { if (version === this.configVersion) this.failed(error); })
+      .finally(() => { this.operation = null; this.emit(); });
     this.emit(); return this.operation;
   }
   vote(team) {
     if (!TEAM_CHOICES.includes(team)) throw new TypeError('Choose TEAM DOTS or TEAM BOTS.');
-    if (!this.config?.supabaseUrl || !this.result?.open || this.result.yourVote || this.operation
+    if (this.config?.apiBaseUrl && !this.operation && this.result && this.result.day !== this.currentDay()) {
+      return this.refresh();
+    }
+    if (!this.config?.apiBaseUrl || !this.result?.open || this.result.yourVote || this.operation
         || !['ready', 'vote-error'].includes(this.phase) || (this.pendingTeam && this.pendingTeam !== team)) {
       return this.operation ?? Promise.resolve();
     }
     const day = this.result.day;
+    if (day !== this.currentDay()) return this.refresh();
+    const config = this.config, version = this.configVersion;
     this.phase = 'submitting'; this.pendingTeam = team; this.errorStatus = null; this.errorCode = null;
-    this.operation = this.withSession(async session => {
-      const local = this.readChoice(day);
-      if (local?.phase === 'confirmed') {
-        this.reconcile(validateVersusResult(await this.rpc('/rest/v1/rpc/versus_results', {}, session)));
-        return;
+    this.operation = this.withIdentity(async identity => {
+      if (version !== this.configVersion) return;
+      if (day !== this.currentDay()) {
+        this.result = null; this.pendingTeam = null; await this.readCurrent(identity, config, version); return;
       }
+      const local = this.readChoice(day, config);
+      if (local?.phase === 'confirmed') { await this.readCurrent(identity, config, version); return; }
       if (local && local.team !== team) {
-        this.pendingTeam = local.team;
-        throw new VersusRequestError(0, 'choice_pending');
+        this.pendingTeam = local.team; throw new VersusRequestError(0, 'choice_pending');
       }
-      this.saveStorage(this.choiceKey(day), JSON.stringify({ team, phase: 'pending' }));
-      const result = validateVersusResult(await this.rpc('/rest/v1/rpc/cast_versus_vote',
-        { p_team: team, p_expected_day: day }, session));
-      if (result.day !== day || typeof result.accepted !== 'boolean' || !result.yourVote
-          || (result.accepted && result.yourVote !== team)) throw new VersusRequestError(0, 'invalid_confirmation');
-      this.reconcile(result);
-    }).catch(error => this.failed(error, true)).finally(() => { this.operation = null; this.emit(); });
+      this.saveStorage(this.choiceKey(day, config), JSON.stringify({ team, phase: 'pending' }));
+      let result;
+      try { result = await this.request(day, identity, team, config); }
+      catch (error) {
+        if (version === this.configVersion && day !== this.currentDay()) {
+          this.result = null; this.pendingTeam = null; await this.readCurrent(identity, config, version); return;
+        }
+        throw error;
+      }
+      if (version !== this.configVersion) return;
+      if (day !== this.currentDay()) {
+        this.saveStorage(this.choiceKey(day, config), JSON.stringify({ team: result.yourVote, phase: 'confirmed' }));
+        this.result = null; this.pendingTeam = null; await this.readCurrent(identity, config, version); return;
+      }
+      this.reconcile(result, config);
+    }).catch(error => { if (version === this.configVersion) this.failed(error, true); })
+      .finally(() => { this.operation = null; this.emit(); });
     this.emit(); return this.operation;
   }
 }

@@ -6,8 +6,9 @@ import { validateVersusData } from '../versus-model.js';
 import { validateVersusConfig } from '../versus-poll.js';
 import { createShareMetadata, escapeHtml } from './generate-versus-share.js';
 
-// Explicit redesigned payload. The independent legacy poll and backend stay outside dist.
-const files = ['index.html','versus.css','versus-app.js','versus-model.js','versus-poll.js','model.js','versus-config.json','data.json','versus.json','.nojekyll','assets/tibo.jpg','assets/poteto.jpg','assets/versus-favicon.svg','assets/versus-share.png','assets/versus-share-metadata.json','assets/PressStart2P-Regular.ttf','assets/FONT-LICENSE.txt','assets/LICENSE.txt','docs/versus-rules.md'];
+// Explicit redesigned payload, including the unchanged per-update poll client/config.
+// Backend code, local databases and the archived entry page stay outside dist.
+const files = ['index.html','versus.css','versus-app.js','versus-model.js','versus-poll.js','versus-update-polls.js','polls.js','voting-config.json','model.js','versus-config.json','data.json','versus.json','.nojekyll','assets/tibo.jpg','assets/poteto.jpg','assets/versus-favicon.svg','assets/versus-share.png','assets/versus-share-metadata.json','assets/PressStart2P-Regular.ttf','assets/FONT-LICENSE.txt','assets/LICENSE.txt','docs/versus-rules.md'];
 const [trackerBytes, versusBytes] = await Promise.all([readFile(new URL('../data.json',import.meta.url)),readFile(new URL('../versus.json',import.meta.url))]);
 const data = validateVersusData(JSON.parse(trackerBytes), JSON.parse(versusBytes));
 validateVersusConfig(JSON.parse(await readFile(new URL('../versus-config.json',import.meta.url),'utf8')), 'https://minutechreview.github.io/codex-28/');

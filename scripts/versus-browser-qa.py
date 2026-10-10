@@ -3,7 +3,7 @@
 
 Run `python3 scripts/versus-browser-qa.py`. An ephemeral loopback-only HTTP
 server serves the checkout; every poll call is intercepted by a REST mock.
-No Worker, Supabase project, or other cloud backend is contacted. Screenshots
+No live Worker or other cloud backend is contacted. Screenshots
 and the detailed JSON report go in output/playwright/. data.json is read-only.
 Requires the installed Python Playwright package and its Chromium browser.
 """
@@ -18,9 +18,8 @@ import os
 from pathlib import Path
 import re
 import threading
-import uuid
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import urlsplit
+from urllib.parse import parse_qs, unquote, urlsplit
 
 from playwright.sync_api import sync_playwright, expect
 
@@ -28,12 +27,13 @@ from playwright.sync_api import sync_playwright, expect
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / "output" / "playwright"
 NOW = "2026-10-11T01:00:00.000Z"  # Pacific October 10, round 6.
-API = "https://test-versus.supabase.co"
+API = "http://127.0.0.1:8787"
 CONFIG_FILE = "versus-config.json"
-CONFIG = {"supabaseUrl": API, "publishableKey": "sb_publishable_mockabcdefghijklmnop"}
+CONFIG = {"apiBaseUrl": API}
 REPORT = {"checks": [], "screenshots": [], "pageErrors": [], "unexpectedRequests": []}
 BASE_DATA = json.loads((ROOT / "data.json").read_text())
 BASE_VERSUS = json.loads((ROOT / "versus.json").read_text())
+BASE_VOTING_CONFIG = json.loads((ROOT / "voting-config.json").read_text())
 
 
 def sha256(path):
@@ -83,7 +83,7 @@ def freeze_time(context, now=NOW):
 class MockPoll:
     """Single-device-per-Pacific-day transactional mock, never a real service.
 
-    The client contract is matched to the proposed atomic RPC. Server-side SQL
+    The client contract matches the separate Worker /teams/:day route. SQL
     guards are exercised separately by the backend test suite; this mock checks
     how the browser responds to acceptance, conflicts, and ambiguous responses.
     """
@@ -92,11 +92,11 @@ class MockPoll:
         self.counts = {"dots": dots, "bots": bots}
         self.day = "2026-10-10"
         self.votes = {}
-        self.users = {}
+        self.identities = set()
         self.calls = []
         self.fail_reads = False
         self.fail_votes = False
-        self.fail_auth = False
+        self.rate_limit = False
         self.lose_next_response = False
         self.lose_before_commit = False
         self.foreign_choice = None
@@ -110,41 +110,28 @@ class MockPoll:
             self.respond(route, {})
             return
         path = urlsplit(request.url).path
-        if path.startswith("/auth/v1/"):
-            if self.fail_auth:
-                self.respond(route, {"code": "over_request_rate_limit"}, status=429)
-                return
-            if path == "/auth/v1/signup":
-                assert body == {"data": {}}, body
-                user_id = str(uuid.uuid4())
-                token = f"qa-token-{len(self.users) + 1}"
-                self.users[token] = user_id
-            elif path == "/auth/v1/token":
-                token = body.get("refresh_token", "").removeprefix("refresh-")
-                assert token in self.users, body
-                user_id = self.users[token]
-            else:
-                raise AssertionError(f"Unexpected auth endpoint: {path}")
-            self.respond(route, {"access_token": token, "refresh_token": "refresh-" + token,
-                                 "expires_at": 1893456000, "user": {"id": user_id}})
+        assert re.fullmatch(r"/teams/\d{4}-\d{2}-\d{2}", path), path
+        query = parse_qs(urlsplit(request.url).query)
+        device = body.get("voterId") if request.method == "POST" else query.get("voterId", [None])[0]
+        if device:
+            assert re.fullmatch(r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}", device), device
+            self.identities.add(device)
+        is_vote = request.method == "POST"
+        if self.rate_limit and is_vote:
+            self.respond(route, {"error": {"code": "rate_limited", "message": "QA rate limited"}}, status=429)
             return
-        assert path in ("/rest/v1/rpc/versus_results", "/rest/v1/rpc/cast_versus_vote"), path
-        assert request.headers.get("apikey") == CONFIG["publishableKey"], request.headers
-        token = request.headers.get("authorization", "").removeprefix("Bearer ")
-        assert token in self.users, "RPC must be authenticated as the anonymous visitor."
-        device = self.users[token]
-        is_vote = path.endswith("/cast_versus_vote")
         if (self.fail_reads and not is_vote) or (self.fail_votes and is_vote):
             self.respond(route, {"message": "QA service unavailable"}, status=503)
             return
         day = self.day
-        choice = body.get("p_team")
+        choice = body.get("choice")
         key = (day, device)
         accepted = False
         if is_vote:
             assert choice in ("dots", "bots"), body
-            if body.get("p_expected_day") != day:
-                self.respond(route, {"code": "22023", "message": "Pacific day changed"}, status=400)
+            assert set(body) == {"voterId", "choice"}, body
+            if path != f"/teams/{day}":
+                self.respond(route, {"error": {"code": "day_changed", "message": "Pacific day changed"}}, status=409)
                 return
             if self.lose_before_commit:
                 self.lose_before_commit = False
@@ -183,9 +170,57 @@ class MockPoll:
                       body=json.dumps(result))
 
 
+class MockApprovalPoll:
+    """Original per-Tibo-day approval namespace, independent of team votes."""
+
+    def __init__(self):
+        self.calls = []
+        self.counts = {}
+        self.votes = {}
+        self.identities = set()
+        self.fail_reads = False
+        self.lose_response = False
+
+    def route(self, route):
+        request = route.request
+        parsed = urlsplit(request.url)
+        poll_id = unquote(parsed.path.removeprefix("/polls/"))
+        assert re.fullmatch(r"codex-28:\d{4}-\d{2}-\d{2}:day-\d+", poll_id), poll_id
+        body = request.post_data_json if request.post_data else {}
+        self.calls.append({"method": request.method, "pollId": poll_id, "body": body})
+        if self.fail_reads and request.method == "GET":
+            MockPoll.respond(route, {"error": {"code": "qa_unavailable"}}, status=503)
+            return
+        voter = body.get("voterId") if request.method == "POST" else parse_qs(parsed.query).get("voterId", [None])[0]
+        if voter:
+            self.identities.add(voter)
+        counts = self.counts.setdefault(poll_id, {"approve": 0, "not_convinced": 0})
+        key = (poll_id, voter)
+        accepted = False
+        if request.method == "POST":
+            assert set(body) == {"voterId", "choice"}, body
+            choice = body["choice"]
+            assert choice in ("approve", "not_convinced") and voter, body
+            if key not in self.votes:
+                self.votes[key] = choice
+                counts[choice] += 1
+                accepted = True
+            if self.lose_response:
+                self.lose_response = False
+                route.abort("failed")
+                return
+        result = {"pollId": poll_id, "approve": counts["approve"],
+                  "notConvinced": counts["not_convinced"], "total": sum(counts.values()),
+                  "yourVote": self.votes.get(key)}
+        if request.method == "POST":
+            result["accepted"] = accepted
+        MockPoll.respond(route, result)
+
+
 def setup_context(browser, site, *, width=1440, height=1000, now=NOW,
                   configured=False, mock=None, data=None, versus=None,
-                  reduced=False, storage_blocked=False, data_failure=None):
+                  reduced=False, storage_blocked=False, data_failure=None,
+                  approval_configured=False, approval_mock=None, canonical=False):
     context = browser.new_context(viewport={"width": width, "height": height},
                                   reduced_motion="reduce" if reduced else "no-preference",
                                   is_mobile=width <= 390, has_touch=width <= 390)
@@ -196,12 +231,24 @@ def setup_context(browser, site, *, width=1440, height=1000, now=NOW,
         url = route.request.url
         parsed = urlsplit(url)
         if url.startswith(API):
-            assert configured and mock, "Unconfigured site called Supabase."
-            mock.route(route)
+            if parsed.path.startswith("/teams/"):
+                assert configured and mock, "Unconfigured site called the team Worker."
+                mock.route(route)
+            elif parsed.path.startswith("/polls/"):
+                assert approval_configured and approval_mock, "Unconfigured site called the approval Worker."
+                approval_mock.route(route)
+            else:
+                raise AssertionError(f"Unexpected Worker endpoint: {parsed.path}")
         elif parsed.netloc == urlsplit(site_origin).netloc:
             if parsed.path.endswith("/" + CONFIG_FILE):
                 route.fulfill(status=200, content_type="application/json",
-                              body=json.dumps(CONFIG if configured else {"supabaseUrl": None, "publishableKey": None}))
+                              body=json.dumps(CONFIG if configured else {"apiBaseUrl": None}))
+            elif parsed.path.endswith("/voting-config.json"):
+                if canonical:
+                    route.continue_()
+                else:
+                    route.fulfill(status=200, content_type="application/json",
+                                  body=json.dumps({"apiBaseUrl": API if approval_configured else None}))
             elif parsed.path.endswith("/data.json") and data_failure and data_failure[0]:
                 route.fulfill(status=503, content_type="application/json", body='{"error":"QA unavailable"}')
             elif parsed.path.endswith("/data.json") and data is not None:
@@ -210,6 +257,9 @@ def setup_context(browser, site, *, width=1440, height=1000, now=NOW,
                 route.fulfill(status=200, content_type="application/json", body=json.dumps(versus))
             else:
                 route.continue_()
+        elif canonical and parsed.path.startswith("/polls/") and url.startswith(BASE_VOTING_CONFIG["apiBaseUrl"]):
+            assert approval_configured and approval_mock
+            approval_mock.route(route)
         elif parsed.hostname in ("fonts.googleapis.com", "fonts.gstatic.com"):
             # Public font downloads contain no project data or credentials.
             route.continue_()
@@ -253,7 +303,11 @@ def set_time(page, now):
 def test_visuals(browser, site, screenshots):
     metrics = []
     for width in (320, 390, 768, 1440):
-        context, page = setup_context(browser, site, width=width, height=844 if width <= 390 else 1000)
+        unavailable_approval = MockApprovalPoll()
+        unavailable_approval.fail_reads = True
+        context, page = setup_context(browser, site, width=width, height=844 if width <= 390 else 1000,
+                                      approval_configured=screenshots, approval_mock=unavailable_approval,
+                                      canonical=screenshots)
         try:
             load(page, site)
             check_round(page, 6)
@@ -262,6 +316,8 @@ def test_visuals(browser, site, screenshots):
             expect(page.locator("#vote-bots")).to_be_disabled()
             assert page.locator("#fighter-dots img, #fighter-bots img").evaluate_all(
                 "imgs => imgs.length === 2 && imgs.every(i => i.complete && i.naturalWidth > 0)")
+            expect(page.locator("#name-bots")).to_have_text(BASE_VERSUS["teams"]["bots"]["name"])
+            expect(page.locator("#portrait-bots")).to_have_attribute("alt", BASE_VERSUS["teams"]["bots"]["name"])
             overflow = page.evaluate("({viewport:innerWidth,document:document.documentElement.scrollWidth,body:document.body.scrollWidth})")
             assert overflow["document"] <= width and overflow["body"] <= width, overflow
             touch = page.locator("#sound-toggle, #vote-dots, #vote-bots").evaluate_all(
@@ -296,21 +352,16 @@ def test_controls(browser, site):
     finally:
         context.close()
 
-    classified = copy.deepcopy(BASE_VERSUS)
-    grok_entries = [entry for day in classified["days"] for entry in day["grokbot"]]
-    for entry in grok_entries:
-        entry["status"] = "improvement"
-    grok_entries[0]["status"] = "reset"
-    context, page = setup_context(browser, site, versus=classified)
+    context, page = setup_context(browser, site)
     try:
         load(page, site)
         dots_hits = sum(day["status"] == "improvement" for day in BASE_DATA["days"])
         dots_resets = sum(day["status"] == "reset" for day in BASE_DATA["days"])
         expect(page.locator("#hits-dots")).to_contain_text(str(dots_hits))
         expect(page.locator("#resets-dots")).to_contain_text(str(dots_resets))
-        expect(page.locator("#hits-bots")).to_contain_text(str(len(grok_entries) - 1))
-        expect(page.locator("#resets-bots")).to_contain_text("1")
-        passed("Explicit source classifications render separate improvements and resets for both teams")
+        expect(page.locator("#hits-bots")).to_contain_text("?")
+        expect(page.locator("#resets-bots")).to_contain_text("?")
+        passed("Typed Tibo day records render separate improvements/resets; original untyped Grok records remain unknown")
     finally:
         context.close()
 
@@ -361,6 +412,21 @@ def test_data(browser, site):
                     for entry in day["grokbot"]:
                         assert entry["summary"] not in source, f"Hardcoded Grok record in {filename}"
         passed("Tibo/Grok summaries are rendered from fetched data; authored UI/model contain no known hardcoded records")
+    finally:
+        context.close()
+
+    malformed = copy.deepcopy(BASE_VERSUS)
+    malformed["days"][0]["grokbot"][0]["status"] = "improvement"
+    context, page = setup_context(browser, site, versus=malformed)
+    try:
+        page.goto(site, wait_until="networkidle")
+        expect(page.locator("#data-status")).to_contain_text("Data unavailable")
+        expect(page.locator("#round-number")).to_have_text("--")
+        del malformed["days"][0]["grokbot"][0]["status"]
+        page.locator("#data-refresh").click()
+        check_round(page, 6)
+        expect(page.locator("#hits-bots")).to_contain_text("?")
+        passed("Unknown Grok source fields fail strict validation; retry recovers original schema without inventing classification")
     finally:
         context.close()
 
@@ -453,9 +519,9 @@ def test_poll(browser, site):
         page.reload(wait_until="networkidle")
         expect(page.locator("#vote-bots")).to_be_disabled()
         assert mock.counts == {"dots": 4, "bots": 1}, mock.counts
-        vote_calls = [call for call in mock.calls if call["url"].endswith("/cast_versus_vote")]
+        vote_calls = [call for call in mock.calls if call["method"] == "POST"]
         assert len(vote_calls) == 1, vote_calls
-        stored = page.evaluate("Object.fromEntries(Object.entries(localStorage).map(([k,v])=>[k,JSON.parse(v)]))")
+        stored = page.evaluate("Object.fromEntries(Object.entries(localStorage).map(([k,v])=>{try{return[k,JSON.parse(v)]}catch{return[k,v]}}))")
         assert all(not any(key in value for key in ("dotsVotes", "botsVotes", "totalVotes"))
                    for value in stored.values() if isinstance(value, dict)), stored
         passed("Configured REST mock counts, exact health formula, keyboard vote, repeat lock, and no local authoritative counts")
@@ -493,7 +559,7 @@ def test_poll(browser, site):
         expect(page.locator("#vote-bots")).to_be_disabled()
         expect(page.locator("#poll-status")).to_contain_text(re.compile(r"bots", re.I))
         assert mock.counts == {"dots": 0, "bots": 1}, mock.counts
-        vote_calls = [call for call in mock.calls if call["url"].endswith("/cast_versus_vote")]
+        vote_calls = [call for call in mock.calls if call["method"] == "POST"]
         assert len(vote_calls) == 1, vote_calls
         passed("Lost vote response keeps the choice pending; refresh confirms the committed vote without re-posting")
     finally:
@@ -512,7 +578,7 @@ def test_poll(browser, site):
         page.locator("#poll-refresh").click()
         expect(page.locator("#poll-status")).to_contain_text("LOCKED IN")
         assert mock.counts == {"dots": 1, "bots": 0}, mock.counts
-        vote_calls = [call for call in mock.calls if call["url"].endswith("/cast_versus_vote")]
+        vote_calls = [call for call in mock.calls if call["method"] == "POST"]
         assert len(vote_calls) == 2 and vote_calls[0]["body"] == vote_calls[1]["body"], vote_calls
         passed("Uncommitted lost response refresh retries the original side and produces exactly one server vote")
     finally:
@@ -536,8 +602,8 @@ def test_poll(browser, site):
         expect(page.locator("#poll-status")).to_contain_text("LOCKED IN")
         assert mock.counts == {"dots": 0, "bots": 1}, mock.counts
         assert all(mock.votes[key] == value for key, value in old_votes.items())
-        assert len(mock.users) == 1, "Pacific rollover must retain the same anonymous device identity."
-        passed("PT midnight refresh opens a new daily vote while preserving yesterday's choice and anonymous identity")
+        assert len(mock.identities) == 1, "Pacific rollover must retain the same random browser identity."
+        passed("PT midnight refresh opens a new daily vote while preserving yesterday's choice and browser identity")
     finally:
         context.close()
 
@@ -563,14 +629,20 @@ def test_poll(browser, site):
         context.close()
 
     mock = MockPoll()
-    mock.fail_auth = True
+    mock.rate_limit = True
     context, page = setup_context(browser, site, configured=True, mock=mock)
     try:
         load(page, site)
+        expect(page.locator("#vote-dots")).to_be_enabled()
+        page.locator("#vote-dots").click()
         expect(page.locator("#vote-dots")).to_be_disabled()
-        expect(page.locator("#poll-status")).to_contain_text(re.compile(r"rate|wait|unavailable|could not", re.I))
-        assert not any("/rest/v1/" in call["url"] for call in mock.calls), mock.calls
-        passed("Anonymous-auth rate limit fails closed before any vote RPC")
+        expect(page.locator("#poll-status")).to_contain_text("RATE LIMITED")
+        assert mock.counts == {"dots": 3, "bots": 1}, mock.counts
+        mock.rate_limit = False
+        page.locator("#poll-refresh").click()
+        expect(page.locator("#poll-status")).to_contain_text("LOCKED IN")
+        assert mock.counts == {"dots": 4, "bots": 1}, mock.counts
+        passed("Worker rate limit adds no vote; checking status safely retries the same side after recovery")
     finally:
         context.close()
 
@@ -580,8 +652,149 @@ def test_poll(browser, site):
         load(page, site)
         expect(page.locator("#vote-dots")).to_be_disabled()
         expect(page.locator("#poll-status")).to_contain_text(re.compile(r"storage|browser", re.I))
-        assert not mock.calls, mock.calls
-        passed("Blocked localStorage fails closed before anonymous signup or a vote request")
+        assert not any(call["method"] == "POST" for call in mock.calls), mock.calls
+        passed("Blocked localStorage fails closed before a vote request")
+    finally:
+        context.close()
+
+
+def approval_id(day):
+    return f"codex-28:{BASE_DATA['days'][day - 1]['date']}:day-{day}"
+
+
+def approval_node(page, day):
+    return page.locator(f'.update-poll[data-poll-id="{approval_id(day)}"]')
+
+
+def assert_approval_counts(poll, approve, not_convinced):
+    expect(poll.locator(".update-poll-total")).to_contain_text(f"{approve + not_convinced} vote")
+    expect(poll.locator(".update-poll-approve")).to_contain_text(f"{approve} ·")
+    expect(poll.locator(".update-poll-not-convinced")).to_contain_text(f"{not_convinced} ·")
+
+
+def test_approval(browser, site):
+    legacy = MockApprovalPoll()
+    context, page = setup_context(browser, site, approval_configured=True, approval_mock=legacy)
+    try:
+        load(page, site)
+        expect(page.locator(".update-poll")).to_have_count(5)
+        first = approval_node(page, 1)
+        expect(first.locator('[data-choice="approve"]')).to_be_enabled()
+        assert_approval_counts(first, 0, 0)
+        first.locator('[data-choice="approve"]').focus()
+        page.keyboard.press("Enter")
+        expect(first.locator(".update-poll-status")).to_contain_text("Your vote: Approve")
+        assert_approval_counts(first, 1, 0)
+        expect(first.locator('[data-choice="not_convinced"]')).to_be_disabled()
+        page.locator("#show-all").click()
+        expect(page.locator(".update-poll")).to_have_count(5)
+        assert_approval_counts(first, 1, 0)
+        expect(approval_node(page, 6)).to_have_count(0)
+        expect(approval_node(page, 7)).to_have_count(0)
+        page.locator("#show-all").click()
+        page.reload(wait_until="networkidle")
+        expect(first.locator(".update-poll-status")).to_contain_text("Your vote: Approve")
+        assert_approval_counts(first, 1, 0)
+        assert len([call for call in legacy.calls if call["method"] == "POST"]) == 1
+        passed("Original approval buttons vote by keyboard once; stable day IDs survive reload/timeline toggles and exclude pending/future days")
+    finally:
+        context.close()
+
+    teams = MockPoll(dots=0, bots=0)
+    legacy = MockApprovalPoll()
+    context, page = setup_context(browser, site, configured=True, mock=teams,
+                                  approval_configured=True, approval_mock=legacy)
+    try:
+        load(page, site)
+        first = approval_node(page, 1)
+        expect(first.locator('[data-choice="not_convinced"]')).to_be_enabled()
+        first.locator('[data-choice="not_convinced"]').click()
+        expect(first.locator(".update-poll-status")).to_contain_text("Your vote: Not convinced")
+        expect(page.locator("#vote-dots")).to_be_enabled()
+        page.locator("#vote-dots").click()
+        expect(page.locator("#poll-status")).to_contain_text("LOCKED IN")
+        assert_approval_counts(first, 0, 1)
+        assert_counts_and_health(page, 1, 0)
+        assert teams.identities == legacy.identities and len(teams.identities) == 1, \
+            {"teamIdentities": list(teams.identities), "approvalIdentities": list(legacy.identities)}
+        expect(approval_node(page, 2).locator('[data-choice="approve"]')).to_be_enabled()
+        passed("Approval and team counts/choices stay independent while sharing the preserved browser UUID")
+    finally:
+        context.close()
+
+    legacy = MockApprovalPoll()
+    legacy.lose_response = True
+    context, page = setup_context(browser, site, approval_configured=True, approval_mock=legacy)
+    try:
+        load(page, site)
+        first = approval_node(page, 1)
+        expect(first.locator('[data-choice="approve"]')).to_be_enabled()
+        first.locator('[data-choice="approve"]').click()
+        expect(first.locator(".update-poll-status")).to_contain_text("Vote unconfirmed")
+        expect(first.locator('[data-choice="not_convinced"]')).to_be_disabled()
+        page.locator("#show-all").click()
+        expect(first.locator(".update-poll-retry-vote")).to_be_visible()
+        first.locator(".update-poll-retry-vote").click()
+        expect(first.locator(".update-poll-status")).to_contain_text("Your vote: Approve")
+        assert_approval_counts(first, 1, 0)
+        posts = [call for call in legacy.calls if call["method"] == "POST"]
+        assert len(posts) == 2 and posts[0]["body"] == posts[1]["body"], posts
+        passed("Original approval lost response retains its same-choice retry across timeline rerender without double counting")
+    finally:
+        context.close()
+
+    legacy = MockApprovalPoll()
+    legacy.fail_reads = True
+    context, page = setup_context(browser, site, width=390, height=844,
+                                  approval_configured=True, approval_mock=legacy)
+    try:
+        load(page, site)
+        first = approval_node(page, 1)
+        expect(first.locator(".update-poll-status")).to_contain_text("Shared results could not be loaded")
+        expect(first.locator(".update-poll-results")).to_be_hidden()
+        expect(first.locator('[data-choice="approve"]')).to_be_disabled()
+        legacy.fail_reads = False
+        first.locator(".update-poll-refresh").click()
+        expect(first.locator('[data-choice="approve"]')).to_be_enabled()
+        metrics = first.locator("button:visible").evaluate_all("bs => bs.map(b=>({width:b.getBoundingClientRect().width,height:b.getBoundingClientRect().height}))")
+        assert all(item["width"] >= 44 and item["height"] >= 44 for item in metrics), metrics
+        assert page.evaluate("document.documentElement.scrollWidth") <= 390
+        assert_approval_counts(first, 0, 0)
+        passed("390px original approval errors show no invented count, recover via retry, and preserve 44px controls without overflow")
+    finally:
+        context.close()
+
+    # Hold both services' configs until two fresh tabs have requested them.
+    # Releasing all four together deterministically exercises shared-ID startup.
+    teams = MockPoll(dots=0, bots=0)
+    legacy = MockApprovalPoll()
+    context, first = setup_context(browser, site, configured=True, mock=teams,
+                                   approval_configured=True, approval_mock=legacy)
+    second = context.new_page()
+    second.on("pageerror", lambda error: REPORT["pageErrors"].append(str(error)))
+    waiting_configs = []
+
+    def release_configs(route):
+        waiting_configs.append(route)
+        assert len(waiting_configs) <= 4, "Each service config must load only once per fresh tab."
+        if len(waiting_configs) == 4:
+            for held in waiting_configs:
+                held.fulfill(status=200, content_type="application/json", body=json.dumps(CONFIG))
+
+    context.route(re.compile(r"/(?:versus|voting)-config\.json(?:\?|$)"), release_configs)
+    try:
+        first.goto(site, wait_until="domcontentloaded")
+        second.goto(site, wait_until="domcontentloaded")
+        for page in (first, second):
+            expect(page.locator("#vote-dots")).to_be_enabled()
+            expect(approval_node(page, 1).locator('[data-choice="approve"]')).to_be_enabled()
+        first_id = first.evaluate("localStorage.getItem('codex-28-voter-id-v1')")
+        second_id = second.evaluate("localStorage.getItem('codex-28-voter-id-v1')")
+        assert first_id and first_id == second_id
+        assert teams.identities == legacy.identities == {first_id}, \
+            {"teamIdentities": list(teams.identities), "approvalIdentities": list(legacy.identities)}
+        assert len(waiting_configs) == 4
+        passed("Two fresh tabs released together initialize one preserved UUID for both poll systems through their shared Web Lock")
     finally:
         context.close()
 
@@ -589,7 +802,7 @@ def test_poll(browser, site):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--no-screenshots", action="store_true", help="Run checks without overwriting final visual artifacts")
-    parser.add_argument("--only", choices=("visuals", "controls", "data", "time", "poll"), help="Run one group while fixing a failure")
+    parser.add_argument("--only", choices=("visuals", "controls", "data", "time", "poll", "approval"), help="Run one group while fixing a failure")
     args = parser.parse_args()
     OUT.mkdir(parents=True, exist_ok=True)
     original_hash = sha256(ROOT / "data.json")
@@ -609,9 +822,11 @@ def main():
                     test_time(browser, site)
                 if args.only in (None, "poll"):
                     test_poll(browser, site)
+                if args.only in (None, "approval"):
+                    test_approval(browser, site)
                 assert not REPORT["pageErrors"], REPORT["pageErrors"]
                 assert not REPORT["unexpectedRequests"], REPORT["unexpectedRequests"]
-                passed("No JavaScript exceptions, legacy Worker requests, or unexpected external requests")
+                passed("No JavaScript exceptions, live Worker calls, or unexpected external requests")
             finally:
                 browser.close()
     except Exception as error:

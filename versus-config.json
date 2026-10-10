@@ -1,4 +1,3 @@
 {
-  "supabaseUrl": null,
-  "publishableKey": null
+  "apiBaseUrl": null
 }

@@ -123,7 +123,7 @@
       "passed": true
     },
     {
-      "name": "Explicit source classifications render separate improvements and resets for both teams",
+      "name": "Typed Tibo day records render separate improvements/resets; original untyped Grok records remain unknown",
       "passed": true
     },
     {
@@ -136,6 +136,10 @@
     },
     {
       "name": "Tibo/Grok summaries are rendered from fetched data; authored UI/model contain no known hardcoded records",
+      "passed": true
+    },
+    {
+      "name": "Unknown Grok source fields fail strict validation; retry recovers original schema without inventing classification",
       "passed": true
     },
     {
@@ -171,7 +175,7 @@
       "passed": true
     },
     {
-      "name": "PT midnight refresh opens a new daily vote while preserving yesterday's choice and anonymous identity",
+      "name": "PT midnight refresh opens a new daily vote while preserving yesterday's choice and browser identity",
       "passed": true
     },
     {
@@ -179,22 +183,39 @@
       "passed": true
     },
     {
-      "name": "Anonymous-auth rate limit fails closed before any vote RPC",
+      "name": "Worker rate limit adds no vote; checking status safely retries the same side after recovery",
       "passed": true
     },
     {
-      "name": "Blocked localStorage fails closed before anonymous signup or a vote request",
+      "name": "Blocked localStorage fails closed before a vote request",
       "passed": true
     },
     {
-      "name": "No JavaScript exceptions, legacy Worker requests, or unexpected external requests",
+      "name": "Original approval buttons vote by keyboard once; stable day IDs survive reload/timeline toggles and exclude pending/future days",
+      "passed": true
+    },
+    {
+      "name": "Approval and team counts/choices stay independent while sharing the preserved browser UUID",
+      "passed": true
+    },
+    {
+      "name": "Original approval lost response retains its same-choice retry across timeline rerender without double counting",
+      "passed": true
+    },
+    {
+      "name": "390px original approval errors show no invented count, recover via retry, and preserve 44px controls without overflow",
+      "passed": true
+    },
+    {
+      "name": "Two fresh tabs released together initialize one preserved UUID for both poll systems through their shared Web Lock",
+      "passed": true
+    },
+    {
+      "name": "No JavaScript exceptions, live Worker calls, or unexpected external requests",
       "passed": true
     }
   ],
-  "screenshots": [
-    "output/playwright/versus-mobile-390.png",
-    "output/playwright/versus-desktop.png"
-  ],
+  "screenshots": [],
   "pageErrors": [],
   "unexpectedRequests": [],
   "dataHashBefore": "d3afceec07918f307e4e391afa8e5b2d1c7f862ba50c3221e14ac6702578a926",

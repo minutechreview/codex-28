@@ -93,31 +93,29 @@ test("untyped Grok records remain unknown with separate confirmed counts", () =>
   const raw = fixture();
   dotsResult(raw, 1, "improvement");
   botsEntry(raw, 1);
-  botsEntry(raw, 1, "improvement");
-  botsEntry(raw, 1, "reset");
+  botsEntry(raw, 1);
+  botsEntry(raw, 1);
   const data = validate(raw);
   assert.deepEqual({
     hits: data.days[0].bots.hits, resets: data.days[0].bots.resets,
     confirmedHits: data.days[0].bots.confirmedHits, confirmedResets: data.days[0].bots.confirmedResets,
     unclassified: data.days[0].bots.unclassified,
-  }, { hits: null, resets: null, confirmedHits: 1, confirmedResets: 1, unclassified: 1 });
+  }, { hits: null, resets: null, confirmedHits: 0, confirmedResets: 0, unclassified: 3 });
   assert.equal(data.days[0].winner, "unresolved");
   assert.equal(getVersusState(data).totals.bots.hits, null);
-  assert.equal(getVersusState(data).totals.bots.confirmedHits, 1);
+  assert.equal(getVersusState(data).totals.bots.confirmedHits, 0);
 });
 
 test("round winners compare confirmed improvements, while resets stay separate", () => {
   const raw = fixture();
   dotsResult(raw, 1, "improvement");
-  botsEntry(raw, 1, "improvement");
   dotsResult(raw, 2, "reset");
-  botsEntry(raw, 2, "improvement");
+  botsEntry(raw, 2);
   dotsResult(raw, 3, "improvement");
-  botsEntry(raw, 3, "reset");
+  botsEntry(raw, 3);
   dotsResult(raw, 4, "reset");
-  botsEntry(raw, 4, "reset");
   const data = validate(raw);
-  assert.deepEqual(data.days.slice(0, 4).map((day) => day.winner), ["draw", "bots", "dots", "draw"]);
+  assert.deepEqual(data.days.slice(0, 4).map((day) => day.winner), ["dots", "unresolved", "unresolved", "draw"]);
   assert.equal(data.days[4].dots.noMove, true);
   assert.equal(data.days[4].bots.noMove, true);
   assert.equal(data.days[4].winner, "draw");
@@ -126,17 +124,16 @@ test("round winners compare confirmed improvements, while resets stay separate",
 
 test("a pending side does not lose a populated round by inference", () => {
   const raw = fixture();
-  botsEntry(raw, 1, "improvement");
+  botsEntry(raw, 1);
   assert.equal(validate(raw).days[0].winner, "unresolved");
 });
 
-test("an explicit future type field may classify a source without inventing one", () => {
-  const raw = fixture();
-  dotsResult(raw, 1, "reset");
-  const entry = botsEntry(raw, 1);
-  entry.type = "reset";
-  assert.equal(validate(raw).days[0].bots.resets, 1);
-  assert.equal(validate(raw).days[0].bots.entries[0].classification, "reset");
+test("original Grok schema rejects added classification fields without changing its content", () => {
+  for (const field of ["status", "type"]) {
+    const raw = fixture();
+    botsEntry(raw, 1)[field] = "reset";
+    assert.throws(() => validate(raw), DataValidationError);
+  }
 });
 
 test("rounds start and finish at the PT boundary, including the fall DST end date", () => {
@@ -167,10 +164,10 @@ test("KO is only possible after all 28 days close with classified, reported resu
   assert.equal(getVersusState(data, "2026-11-02T07:59:59.999Z").finale.status, "ongoing");
   assert.equal(getVersusState(data, "2026-11-02T08:00:00Z").finale.status, "ko");
   assert.equal(getVersusState(data, "2026-11-02T08:00:00Z").finale.winner, "dots");
-  botsEntry(raw, 1, "improvement");
+  dotsResult(raw, 1, "missed");
   data = validate(raw);
   assert.equal(getVersusState(data, "2026-11-02T08:00:00Z").finale.status, "draw");
-  botsEntry(raw, 2);
+  botsEntry(raw, 1);
   data = validate(raw);
   assert.equal(getVersusState(data, "2026-11-02T08:00:00Z").finale.status, "unresolved");
   assert.equal(getVersusState(data, "2026-11-02T08:00:00Z").finale.winner, null);

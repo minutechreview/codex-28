@@ -10,7 +10,7 @@
   "scripts": {
     "start": "python3 -m http.server 4173 --bind 127.0.0.1",
     "test": "node --test tests/*.test.js",
-    "lint": "node --check app.js && node --check model.js && node --check polls.js && node --check backend/worker.js && node --check scripts/build.js && node --check scripts/voting-dev-server.js && node --check scripts/run-voting-browser-qa.js && node --check versus-app.js && node --check versus-model.js && node --check versus-poll.js && node --check scripts/generate-versus-share.js",
+    "lint": "node --check app.js && node --check model.js && node --check polls.js && node --check backend/worker.js && node --check scripts/build.js && node --check scripts/voting-dev-server.js && node --check scripts/run-voting-browser-qa.js && node --check versus-app.js && node --check versus-model.js && node --check versus-poll.js && node --check scripts/generate-versus-share.js && node --check backend/team-polls.js && node --check versus-update-polls.js",
     "voting:dev": "node scripts/voting-dev-server.js",
     "pretest:voting-browser": "npm run build",
     "test:voting-browser": "node scripts/run-voting-browser-qa.js",
