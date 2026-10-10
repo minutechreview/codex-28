@@ -1,0 +1,264 @@
+{
+  "startDate": "2026-10-05",
+  "endDate": "2026-11-01",
+  "timezone": "America/Los_Angeles",
+  "teams": {
+    "dots": {
+      "team": "Team Dots",
+      "name": "Tibo",
+      "handle": "thsottiaux",
+      "profileUrl": "https://x.com/thsottiaux",
+      "role": "Codex & ChatGPT at OpenAI",
+      "avatar": "assets/tibo.jpg",
+      "product": "Codex / ChatGPT / Dots",
+      "entriesSource": "data.json"
+    },
+    "bots": {
+      "team": "Team Bots",
+      "name": "Lauren Tan",
+      "handle": "poteto",
+      "profileUrl": "https://x.com/poteto",
+      "role": "Grok Bot at SpaceXAI",
+      "avatar": "assets/poteto.jpg",
+      "product": "Grok Bot",
+      "entriesSource": "versus.json#days[].grokbot"
+    }
+  },
+  "days": [
+    {
+      "day": 1,
+      "date": "2026-10-05",
+      "grokbot": [
+        {
+          "number": "1.1",
+          "summary": "Grok Bot got a public changelog: every release since launch with what's new, improved and fixed, plus an RSS feed (x.ai/changelog/bot).",
+          "tweetUrl": "https://x.com/ericzakariasson/status/2107161574247129284",
+          "postedAt": "2026-10-05T10:30:43-07:00",
+          "announcedBy": "ericzakariasson",
+          "potetoUrl": "https://x.com/poteto/status/2107161958017585432"
+        }
+      ]
+    },
+    {
+      "day": 2,
+      "date": "2026-10-06",
+      "grokbot": [
+        {
+          "number": "2.1",
+          "summary": "Tag @bot on X: reply to, post, or quote any post with an instruction (save to Notion, remind me, summarize, draft a reply) and it lands in your Grok Bot.",
+          "tweetUrl": "https://x.com/larsencc/status/2107616555685360072",
+          "postedAt": "2026-10-06T16:38:39-07:00",
+          "announcedBy": "larsencc",
+          "potetoUrl": "https://x.com/poteto/status/2107634927617638858"
+        }
+      ]
+    },
+    {
+      "day": 3,
+      "date": "2026-10-07",
+      "grokbot": [
+        {
+          "number": "3.1",
+          "summary": "Best model for each task: Grok Bot now routes to leading back-end models, with Claude Opus 5.5 rolling out (announced by Elon 11:46 PM PT Oct 6; poteto confirmed the rollout just after midnight PT).",
+          "tweetUrl": "https://x.com/poteto/status/2107728968501903652",
+          "postedAt": "2026-10-07T00:05:20-07:00",
+          "announcedBy": "elonmusk",
+          "potetoUrl": "https://x.com/poteto/status/2107732132416368654"
+        },
+        {
+          "number": "3.2",
+          "summary": "Release 0.68.1: Bots build slide decks delivered as PowerPoint or Google Slides, formatted emails straight from a draft card, 1:1 chats take the Bot's color, faster computer use on a 1920x1200 screen.",
+          "tweetUrl": "https://x.com/ericzakariasson/status/2107887770937283028",
+          "postedAt": "2026-10-07T10:36:21-07:00",
+          "announcedBy": "ericzakariasson",
+          "potetoUrl": "https://x.com/poteto/status/2107899902013657228"
+        },
+        {
+          "number": "3.3",
+          "summary": "Native X access: Grok Bot can now search, read, and monitor X, with no X account, API key, or connector needed.",
+          "tweetUrl": "https://x.com/bot/status/2107949161878606089",
+          "postedAt": "2026-10-07T14:40:18-07:00",
+          "announcedBy": "bot",
+          "potetoUrl": "https://x.com/poteto/status/2107963437154435182"
+        }
+      ]
+    },
+    {
+      "day": 4,
+      "date": "2026-10-08",
+      "grokbot": [
+        {
+          "number": "4.1",
+          "summary": "Shopify connector: connect Shopify and have Grok Bot check orders, track inventory, and keep product listings up to date.",
+          "tweetUrl": "https://x.com/bot/status/2108228871938359347",
+          "postedAt": "2026-10-08T09:11:46-07:00",
+          "announcedBy": "bot",
+          "potetoUrl": "https://x.com/poteto/status/2108234315096330255"
+        }
+      ]
+    },
+    {
+      "day": 5,
+      "date": "2026-10-09",
+      "grokbot": [
+        {
+          "number": "5.1",
+          "summary": "Bot colors: a new setting that makes Grok Bot a lot more colorful (turn on bot color in settings).",
+          "tweetUrl": "https://x.com/johnbai/status/2108602230232461767",
+          "postedAt": "2026-10-09T09:55:22-07:00",
+          "announcedBy": "johnbai",
+          "potetoUrl": "https://x.com/poteto/status/2108603981132124594"
+        },
+        {
+          "number": "5.2",
+          "summary": "Grok Bot now has its own email address it can use to sign up for services, contact businesses, or schedule time with someone.",
+          "tweetUrl": "https://x.com/bot/status/2108609764766908772",
+          "postedAt": "2026-10-09T10:25:18-07:00",
+          "announcedBy": "bot",
+          "potetoUrl": "https://x.com/poteto/status/2108613514575446368"
+        },
+        {
+          "number": "5.3",
+          "summary": "Four new Grok Bot templates for building on X: launching, threat hunting, threat intel, and X API integration.",
+          "tweetUrl": "https://x.com/ericzakariasson/status/2108645012644991251",
+          "postedAt": "2026-10-09T12:45:22-07:00",
+          "announcedBy": "ericzakariasson",
+          "potetoUrl": "https://x.com/poteto/status/2108651351542829341"
+        }
+      ]
+    },
+    {
+      "day": 6,
+      "date": "2026-10-10",
+      "grokbot": [
+        {
+          "number": "6.1",
+          "summary": "Removed the 50-bot cap on how many Bots you can have.",
+          "tweetUrl": "https://x.com/poteto/status/2109022078573879572",
+          "postedAt": "2026-10-10T13:43:41-07:00",
+          "announcedBy": "poteto",
+          "potetoUrl": null
+        },
+        {
+          "number": "6.2",
+          "summary": "Fixed a bug where external app links didn't work in Grok Bot.",
+          "tweetUrl": "https://x.com/poteto/status/2109034028984926302",
+          "postedAt": "2026-10-10T14:31:11-07:00",
+          "announcedBy": "poteto",
+          "potetoUrl": null
+        }
+      ]
+    },
+    {
+      "day": 7,
+      "date": "2026-10-11",
+      "grokbot": []
+    },
+    {
+      "day": 8,
+      "date": "2026-10-12",
+      "grokbot": []
+    },
+    {
+      "day": 9,
+      "date": "2026-10-13",
+      "grokbot": []
+    },
+    {
+      "day": 10,
+      "date": "2026-10-14",
+      "grokbot": []
+    },
+    {
+      "day": 11,
+      "date": "2026-10-15",
+      "grokbot": []
+    },
+    {
+      "day": 12,
+      "date": "2026-10-16",
+      "grokbot": []
+    },
+    {
+      "day": 13,
+      "date": "2026-10-17",
+      "grokbot": []
+    },
+    {
+      "day": 14,
+      "date": "2026-10-18",
+      "grokbot": []
+    },
+    {
+      "day": 15,
+      "date": "2026-10-19",
+      "grokbot": []
+    },
+    {
+      "day": 16,
+      "date": "2026-10-20",
+      "grokbot": []
+    },
+    {
+      "day": 17,
+      "date": "2026-10-21",
+      "grokbot": []
+    },
+    {
+      "day": 18,
+      "date": "2026-10-22",
+      "grokbot": []
+    },
+    {
+      "day": 19,
+      "date": "2026-10-23",
+      "grokbot": []
+    },
+    {
+      "day": 20,
+      "date": "2026-10-24",
+      "grokbot": []
+    },
+    {
+      "day": 21,
+      "date": "2026-10-25",
+      "grokbot": []
+    },
+    {
+      "day": 22,
+      "date": "2026-10-26",
+      "grokbot": []
+    },
+    {
+      "day": 23,
+      "date": "2026-10-27",
+      "grokbot": []
+    },
+    {
+      "day": 24,
+      "date": "2026-10-28",
+      "grokbot": []
+    },
+    {
+      "day": 25,
+      "date": "2026-10-29",
+      "grokbot": []
+    },
+    {
+      "day": 26,
+      "date": "2026-10-30",
+      "grokbot": []
+    },
+    {
+      "day": 27,
+      "date": "2026-10-31",
+      "grokbot": []
+    },
+    {
+      "day": 28,
+      "date": "2026-11-01",
+      "grokbot": []
+    }
+  ],
+  "updatedAt": "2026-10-10T22:24:48.000Z"
+}
