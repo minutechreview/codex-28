@@ -1,0 +1,202 @@
+{
+  "checks": [
+    {
+      "name": "320/390/768/1440 layouts, portrait loading, real 44px buttons, and unconfigured COMING SOON",
+      "passed": true,
+      "detail": [
+        {
+          "width": 320,
+          "overflow": {
+            "viewport": 320,
+            "document": 320,
+            "body": 320
+          },
+          "buttons": [
+            {
+              "id": "sound-toggle",
+              "width": 82,
+              "height": 44,
+              "tag": "BUTTON"
+            },
+            {
+              "id": "vote-dots",
+              "width": 256,
+              "height": 70,
+              "tag": "BUTTON"
+            },
+            {
+              "id": "vote-bots",
+              "width": 256,
+              "height": 70,
+              "tag": "BUTTON"
+            }
+          ]
+        },
+        {
+          "width": 390,
+          "overflow": {
+            "viewport": 390,
+            "document": 390,
+            "body": 390
+          },
+          "buttons": [
+            {
+              "id": "sound-toggle",
+              "width": 82,
+              "height": 44,
+              "tag": "BUTTON"
+            },
+            {
+              "id": "vote-dots",
+              "width": 316,
+              "height": 70,
+              "tag": "BUTTON"
+            },
+            {
+              "id": "vote-bots",
+              "width": 316,
+              "height": 70,
+              "tag": "BUTTON"
+            }
+          ]
+        },
+        {
+          "width": 768,
+          "overflow": {
+            "viewport": 768,
+            "document": 768,
+            "body": 768
+          },
+          "buttons": [
+            {
+              "id": "sound-toggle",
+              "width": 96.671875,
+              "height": 44,
+              "tag": "BUTTON"
+            },
+            {
+              "id": "vote-dots",
+              "width": 320,
+              "height": 84,
+              "tag": "BUTTON"
+            },
+            {
+              "id": "vote-bots",
+              "width": 320,
+              "height": 84,
+              "tag": "BUTTON"
+            }
+          ]
+        },
+        {
+          "width": 1440,
+          "overflow": {
+            "viewport": 1440,
+            "document": 1440,
+            "body": 1440
+          },
+          "buttons": [
+            {
+              "id": "sound-toggle",
+              "width": 96.671875,
+              "height": 44,
+              "tag": "BUTTON"
+            },
+            {
+              "id": "vote-dots",
+              "width": 529,
+              "height": 85.59375,
+              "tag": "BUTTON"
+            },
+            {
+              "id": "vote-bots",
+              "width": 529,
+              "height": 85.59375,
+              "tag": "BUTTON"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Sound starts muted, native Enter/Space controls and visible keyboard focus, footer and OG image",
+      "passed": true
+    },
+    {
+      "name": "Explicit source classifications render separate improvements and resets for both teams",
+      "passed": true
+    },
+    {
+      "name": "Reduced-motion disables visible breathing, shaking, and flashing animations",
+      "passed": true
+    },
+    {
+      "name": "Data fetch failure is visible and refresh recovers source records",
+      "passed": true
+    },
+    {
+      "name": "Tibo/Grok summaries are rendered from fetched data; authored UI/model contain no known hardcoded records",
+      "passed": true
+    },
+    {
+      "name": "Pacific midnight advances round 6 to 7 with a new countdown",
+      "passed": true
+    },
+    {
+      "name": "Closing round 28 with real pending/unclassified records does not invent a KO winner",
+      "passed": true
+    },
+    {
+      "name": "Fully classified in-memory results select the final KO winner from source improvements",
+      "passed": true
+    },
+    {
+      "name": "DST fall-back countdown measures the 25-hour Pacific final round",
+      "passed": true
+    },
+    {
+      "name": "Configured REST mock counts, exact health formula, keyboard vote, repeat lock, and no local authoritative counts",
+      "passed": true
+    },
+    {
+      "name": "Atomic duplicate/race response honors the server's original team and adds no second vote",
+      "passed": true
+    },
+    {
+      "name": "Lost vote response keeps the choice pending; refresh confirms the committed vote without re-posting",
+      "passed": true
+    },
+    {
+      "name": "Uncommitted lost response refresh retries the original side and produces exactly one server vote",
+      "passed": true
+    },
+    {
+      "name": "PT midnight refresh opens a new daily vote while preserving yesterday's choice and anonymous identity",
+      "passed": true
+    },
+    {
+      "name": "REST read error disables voting, refresh recovers, and later failure does not fabricate counts",
+      "passed": true
+    },
+    {
+      "name": "Anonymous-auth rate limit fails closed before any vote RPC",
+      "passed": true
+    },
+    {
+      "name": "Blocked localStorage fails closed before anonymous signup or a vote request",
+      "passed": true
+    },
+    {
+      "name": "No JavaScript exceptions, legacy Worker requests, or unexpected external requests",
+      "passed": true
+    }
+  ],
+  "screenshots": [
+    "output/playwright/versus-mobile-390.png",
+    "output/playwright/versus-desktop.png"
+  ],
+  "pageErrors": [],
+  "unexpectedRequests": [],
+  "dataHashBefore": "d3afceec07918f307e4e391afa8e5b2d1c7f862ba50c3221e14ac6702578a926",
+  "dataHashAfter": "d3afceec07918f307e4e391afa8e5b2d1c7f862ba50c3221e14ac6702578a926"
+}
