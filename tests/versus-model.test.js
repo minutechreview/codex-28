@@ -128,11 +128,21 @@ test("a pending side does not lose a populated round by inference", () => {
   assert.equal(validate(raw).days[0].winner, "unresolved");
 });
 
-test("original Grok schema rejects added classification fields without changing its content", () => {
-  for (const field of ["status", "type"]) {
-    const raw = fixture();
-    botsEntry(raw, 1)[field] = "reset";
-    assert.throws(() => validate(raw), DataValidationError);
+test("Grok entries accept an explicit improvement/reset status and reject other classification fields", () => {
+  const raw = fixture();
+  dotsResult(raw, 1, "improvement");
+  botsEntry(raw, 1, "improvement");
+  botsEntry(raw, 1, "improvement");
+  botsEntry(raw, 1, "reset");
+  const data = validate(raw);
+  assert.deepEqual({
+    hits: data.days[0].bots.hits, resets: data.days[0].bots.resets, unclassified: data.days[0].bots.unclassified,
+  }, { hits: 2, resets: 1, unclassified: 0 });
+  assert.equal(data.days[0].winner, "bots");
+  for (const [field, value] of [["type", "reset"], ["status", "pending"], ["status", "missed"], ["status", ""]]) {
+    const bad = fixture();
+    botsEntry(bad, 1)[field] = value;
+    assert.throws(() => validate(bad), DataValidationError);
   }
 });
 

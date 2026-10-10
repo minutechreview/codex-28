@@ -359,9 +359,14 @@ def test_controls(browser, site):
         dots_resets = sum(day["status"] == "reset" for day in BASE_DATA["days"])
         expect(page.locator("#hits-dots")).to_contain_text(str(dots_hits))
         expect(page.locator("#resets-dots")).to_contain_text(str(dots_resets))
-        expect(page.locator("#hits-bots")).to_contain_text("?")
-        expect(page.locator("#resets-bots")).to_contain_text("?")
-        passed("Typed Tibo day records render separate improvements/resets; original untyped Grok records remain unknown")
+        grok = [entry for day in BASE_VERSUS["days"] for entry in day["grokbot"]]
+        if all("status" in entry for entry in grok):
+            expect(page.locator("#hits-bots")).to_contain_text(str(sum(e["status"] == "improvement" for e in grok)))
+            expect(page.locator("#resets-bots")).to_contain_text(str(sum(e["status"] == "reset" for e in grok)))
+        else:
+            expect(page.locator("#hits-bots")).to_contain_text("?")
+            expect(page.locator("#resets-bots")).to_contain_text("?")
+        passed("Typed Tibo day records and explicitly labelled Grok records render separate improvements/resets; untyped Grok records would stay unknown")
     finally:
         context.close()
 
@@ -416,17 +421,21 @@ def test_data(browser, site):
         context.close()
 
     malformed = copy.deepcopy(BASE_VERSUS)
-    malformed["days"][0]["grokbot"][0]["status"] = "improvement"
+    original_status = malformed["days"][0]["grokbot"][0].get("status")
+    malformed["days"][0]["grokbot"][0]["type"] = "improvement"
     context, page = setup_context(browser, site, versus=malformed)
     try:
         page.goto(site, wait_until="networkidle")
         expect(page.locator("#data-status")).to_contain_text("Data unavailable")
         expect(page.locator("#round-number")).to_have_text("--")
-        del malformed["days"][0]["grokbot"][0]["status"]
+        del malformed["days"][0]["grokbot"][0]["type"]
         page.locator("#data-refresh").click()
         check_round(page, 6)
-        expect(page.locator("#hits-bots")).to_contain_text("?")
-        passed("Unknown Grok source fields fail strict validation; retry recovers original schema without inventing classification")
+        if original_status is None:
+            expect(page.locator("#hits-bots")).to_contain_text("?")
+        else:
+            expect(page.locator("#hits-bots")).not_to_contain_text("?")
+        passed("Unknown Grok source fields fail strict validation; retry recovers the source schema without inventing classification")
     finally:
         context.close()
 

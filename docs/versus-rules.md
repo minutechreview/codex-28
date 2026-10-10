@@ -6,17 +6,9 @@ This draft reads the existing sources without rewriting either. Tibo's 28 day/st
 
 One record explicitly classified `improvement` counts as one hit. One `reset` counts as one reset and **zero hits**, even when its prose mentions improvements. `pending` and `missed` are zero hits and zero resets. A summary is not a structured list: the adapter does not split numbered prose into invented updates. The Tibo card currently shows **3 improvement records and 2 reset records**, not a count of every feature mentioned in those summaries.
 
-Each Grok item has an update number, summary and source, but the current 11 records have **no type/status field**. Both its improvement and reset totals are **unknown**, with 0 confirmed hits/0 confirmed resets and 11 unclassified records. This does not mean Grok shipped zero improvements. The validator does not accept invented classification fields or rewrite the schema. No data file was changed.
+Each Grok item has an update number, summary, source and an explicit `status` label, mirroring `data.json`'s day status. Accepted values are `improvement` (one hit) and `reset` (one reset, zero hits). An entry without `status` stays **unclassified**, which makes its round and the totals unknown; any other value, or any other added field such as `type`, is rejected. `number` identifies an update; it does not classify it. All 11 current Grok records are labelled `improvement` (each is a shipped launch, release or fix; none is a usage reset), so Team Bots currently shows 11 confirmed hits and 0 resets.
 
-All 11 original `days[].grokbot[]` objects contain exactly `announcedBy`, `number`, `postedAt`, `potetoUrl`, `summary`, and `tweetUrl`. Neither `status` nor `type` occurs in any of them. `number` identifies an update; it does not classify it as an improvement or reset. This small projection illustrates the missing classification without copying a full source record:
-
-```json
-{"number": "1.1", "announcedBy": "ericzakariasson"}
-```
-
-The projected record's original `status` and `type` are absent, not empty or `pending`.
-
-Daily winners compare classified improvement records (resets excluded). Any unclassified or pending populated lane makes the result **UNRESOLVED**. Empty lanes show **NO MOVE**. If both lanes are empty, their recorded count is a **DRAW**, with pending/future labels retained; that does not establish a real-world missed day. Current populated rounds 1–6 are unresolved. A window-end **KO** requires the window to have ended and all records to be classified with no pending results. Winner = greater total confirmed hits, equal totals = final draw. Current data cannot establish a final winner.
+Daily winners compare classified improvement records (resets excluded). Any unclassified or pending populated lane makes the result **UNRESOLVED**. Empty lanes show **NO MOVE**. If both lanes are empty, their recorded count is a **DRAW**, with pending/future labels retained; that does not establish a real-world missed day. With current data, rounds 1 and 4 are draws, rounds 2, 3 and 5 go to Team Bots, and round 6 is unresolved while Tibo's day is pending. A window-end **KO** requires the window to have ended and all records to be classified with no pending results. Winner = greater total confirmed hits, equal totals = final draw. Current data cannot establish a final winner.
 
 ## Community health
 

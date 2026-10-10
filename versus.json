@@ -35,7 +35,8 @@
           "tweetUrl": "https://x.com/ericzakariasson/status/2107161574247129284",
           "postedAt": "2026-10-05T10:30:43-07:00",
           "announcedBy": "ericzakariasson",
-          "potetoUrl": "https://x.com/poteto/status/2107161958017585432"
+          "potetoUrl": "https://x.com/poteto/status/2107161958017585432",
+          "status": "improvement"
         }
       ]
     },
@@ -49,7 +50,8 @@
           "tweetUrl": "https://x.com/larsencc/status/2107616555685360072",
           "postedAt": "2026-10-06T16:38:39-07:00",
           "announcedBy": "larsencc",
-          "potetoUrl": "https://x.com/poteto/status/2107634927617638858"
+          "potetoUrl": "https://x.com/poteto/status/2107634927617638858",
+          "status": "improvement"
         }
       ]
     },
@@ -63,7 +65,8 @@
           "tweetUrl": "https://x.com/poteto/status/2107728968501903652",
           "postedAt": "2026-10-07T00:05:20-07:00",
           "announcedBy": "elonmusk",
-          "potetoUrl": "https://x.com/poteto/status/2107732132416368654"
+          "potetoUrl": "https://x.com/poteto/status/2107732132416368654",
+          "status": "improvement"
         },
         {
           "number": "3.2",
@@ -71,7 +74,8 @@
           "tweetUrl": "https://x.com/ericzakariasson/status/2107887770937283028",
           "postedAt": "2026-10-07T10:36:21-07:00",
           "announcedBy": "ericzakariasson",
-          "potetoUrl": "https://x.com/poteto/status/2107899902013657228"
+          "potetoUrl": "https://x.com/poteto/status/2107899902013657228",
+          "status": "improvement"
         },
         {
           "number": "3.3",
@@ -79,7 +83,8 @@
           "tweetUrl": "https://x.com/bot/status/2107949161878606089",
           "postedAt": "2026-10-07T14:40:18-07:00",
           "announcedBy": "bot",
-          "potetoUrl": "https://x.com/poteto/status/2107963437154435182"
+          "potetoUrl": "https://x.com/poteto/status/2107963437154435182",
+          "status": "improvement"
         }
       ]
     },
@@ -93,7 +98,8 @@
           "tweetUrl": "https://x.com/bot/status/2108228871938359347",
           "postedAt": "2026-10-08T09:11:46-07:00",
           "announcedBy": "bot",
-          "potetoUrl": "https://x.com/poteto/status/2108234315096330255"
+          "potetoUrl": "https://x.com/poteto/status/2108234315096330255",
+          "status": "improvement"
         }
       ]
     },
@@ -107,7 +113,8 @@
           "tweetUrl": "https://x.com/johnbai/status/2108602230232461767",
           "postedAt": "2026-10-09T09:55:22-07:00",
           "announcedBy": "johnbai",
-          "potetoUrl": "https://x.com/poteto/status/2108603981132124594"
+          "potetoUrl": "https://x.com/poteto/status/2108603981132124594",
+          "status": "improvement"
         },
         {
           "number": "5.2",
@@ -115,7 +122,8 @@
           "tweetUrl": "https://x.com/bot/status/2108609764766908772",
           "postedAt": "2026-10-09T10:25:18-07:00",
           "announcedBy": "bot",
-          "potetoUrl": "https://x.com/poteto/status/2108613514575446368"
+          "potetoUrl": "https://x.com/poteto/status/2108613514575446368",
+          "status": "improvement"
         },
         {
           "number": "5.3",
@@ -123,7 +131,8 @@
           "tweetUrl": "https://x.com/ericzakariasson/status/2108645012644991251",
           "postedAt": "2026-10-09T12:45:22-07:00",
           "announcedBy": "ericzakariasson",
-          "potetoUrl": "https://x.com/poteto/status/2108651351542829341"
+          "potetoUrl": "https://x.com/poteto/status/2108651351542829341",
+          "status": "improvement"
         }
       ]
     },
@@ -137,7 +146,8 @@
           "tweetUrl": "https://x.com/poteto/status/2109022078573879572",
           "postedAt": "2026-10-10T13:43:41-07:00",
           "announcedBy": "poteto",
-          "potetoUrl": null
+          "potetoUrl": null,
+          "status": "improvement"
         },
         {
           "number": "6.2",
@@ -145,7 +155,8 @@
           "tweetUrl": "https://x.com/poteto/status/2109034028984926302",
           "postedAt": "2026-10-10T14:31:11-07:00",
           "announcedBy": "poteto",
-          "potetoUrl": null
+          "potetoUrl": null,
+          "status": "improvement"
         }
       ]
     },

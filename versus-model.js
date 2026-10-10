@@ -6,6 +6,9 @@ export const PACIFIC_TIMEZONE = "America/Los_Angeles";
 const DAY_MS = 86_400_000;
 const TEAM_KEYS = ["team", "name", "handle", "profileUrl", "role", "avatar", "product", "entriesSource"];
 const ENTRY_KEYS = ["number", "summary", "tweetUrl", "postedAt", "announcedBy", "potetoUrl"];
+// Optional per-entry label, mirroring data.json's day status. Absent = unclassified.
+const ENTRY_OPTIONAL_KEYS = ["status"];
+const ENTRY_STATUSES = Object.freeze(["improvement", "reset"]);
 const midnightCache = new Map();
 
 function fail(message) {
@@ -77,7 +80,10 @@ function validateTeam(raw, side) {
 
 function validateGrokEntry(raw, day, index, timezone) {
   const label = `Round ${day.day} Grok entry ${index + 1}`;
-  assertRecord(raw, ENTRY_KEYS, label);
+  assertRecord(raw, ENTRY_KEYS, label, ENTRY_OPTIONAL_KEYS);
+  if (Object.hasOwn(raw, "status") && !ENTRY_STATUSES.includes(raw.status)) {
+    fail(`${label} status must be one of: ${ENTRY_STATUSES.join(", ")}.`);
+  }
   if (typeof raw.number !== "string" || !new RegExp(`^${day.day}\\.[1-9]\\d*$`).test(raw.number)) {
     fail(`${label} number must identify its round and update.`);
   }
@@ -87,8 +93,8 @@ function validateGrokEntry(raw, day, index, timezone) {
   assertTimestamp(raw.postedAt, `${label} postedAt`);
   if (dateInTimezone(raw.postedAt, timezone) !== day.date) fail(`${label} postedAt does not match its round's local date.`);
   if (typeof raw.announcedBy !== "string" || !/^[A-Za-z0-9_]{1,15}$/.test(raw.announcedBy)) fail(`${label} announcedBy is invalid.`);
-  // The original six-field schema supplies no reset/improvement classification.
-  // Preserve that strict contract; source prose and update numbers are not types.
+  // Only an explicit status classifies an entry; prose and update numbers are not types.
+  const status = Object.hasOwn(raw, "status") ? raw.status : null;
   return Object.freeze({
     number: raw.number,
     summary: raw.summary,
@@ -97,8 +103,8 @@ function validateGrokEntry(raw, day, index, timezone) {
     postedAt: raw.postedAt,
     announcedBy: raw.announcedBy,
     potetoUrl: raw.potetoUrl,
-    status: null,
-    classification: "unknown",
+    status,
+    classification: status ?? "unknown",
   });
 }
 
