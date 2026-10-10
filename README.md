@@ -1,116 +1,71 @@
-# Codex 28
+# CODEX 28 — DOTS VS BOTS
 
-A small, unofficial fan scoreboard for a 28-day watch of broadly useful Codex / ChatGPT Work improvements or full usage resets. A cream scoreboard, a colorful dot cheering section, and a public JSON file keep the project simple to use and update.
+An original retro arcade VERSUS screen for the 28-day fan tracker: Tibo / Team Dots on the left, Lauren Tan (@poteto, she/her) / Team Bots on the right. Portraits, teams, records and source links come from the repository's existing public data. Improvements are hits; resets have separate totals. Community team votes power the health bars; Tibo's existing per-update approval polls remain available in the round log.
 
-The October 5–November 1, 2026 window is **this tracker's counting convention**, supplied for this project. It is not presented as a verified official schedule. The source is [Tibo's @thsottiaux profile](https://x.com/thsottiaux); the project does not claim a verified pledge permalink. At the initial release, all 28 outcomes were pending and the site displayed “Never updated · results unverified.” The owner subsequently added sourced reports to `data.json`; no improvement, reset, or missed day is inferred from time passing.
+**Draft code only. Nothing merged or deployed.** Team voting reuses the existing Cloudflare Worker/D1 through separate routes and additive tables. Existing approval routes, storage and public configuration are preserved. The new team configuration is `null`, so that poll displays **COMING SOON** until the extension is separately authorized, deployed and configured. No new provider, account, database, credentials, billing or cloud settings were created or changed.
 
-This project is unaffiliated with OpenAI or Tibo and makes no promises on their behalf.
+Not affiliated with OpenAI or SpaceXAI. Fan-made tracker.
 
-## Run locally
+## Preview and verify
 
-Use Node.js 22.16 or later, npm, and Python 3. There are no application dependencies to install. Local voting verification uses Node's built-in SQLite module.
+Node.js 22.16+, npm and Python 3 are required. The site is vanilla HTML/CSS/ES modules; there are no app dependencies or framework.
 
 ```sh
 npm start
+# http://127.0.0.1:4173/
+npm run check
+npm run test:versus-browser
 ```
 
-Open [http://127.0.0.1:4173/](http://127.0.0.1:4173/). Use an HTTP server, because the browser fetches `data.json`; opening `index.html` as a local file is not a supported preview.
+The browser suite needs Python Playwright and its Chromium installed. It serves isolated loopback pages and intercepts all Worker calls; it never writes production votes. Desktop and 390px mobile screenshots go to `output/playwright/`. Tests cover source classification, PT midnight, spring/fall DST, exact vote/health arithmetic, storage, repeats/races, invalid input, rate limits, stale counts, lost responses, per-update polls and mobile/reduced-motion behavior. `npm run test:voting-browser` also checks the retained original UI through its local compatibility page.
+
+`npm run build` validates both source files and copies an explicit public allowlist to `dist/`. It does not deploy anything. The unchanged per-update client and public `voting-config.json` are included; backend SQL, credentials, tests, screenshots and the legacy app are excluded. The committed static share image is generated from current data and original portraits; the build verifies its recorded data hashes and derives OG alt text from its metadata. To regenerate after a future owner data update:
 
 ```sh
-npm run check
+npm run share:generate
+npm run build
 ```
 
-This checks JavaScript syntax, runs the Node test suite, validates the public data, and copies the intended static payload to `dist/`. `npm run lint`, `npm test`, and `npm run build` are also available separately. The source is plain HTML, CSS, and browser ES modules; there is no UI bundler.
+Static social crawlers cannot execute the runtime JSON fetch. Regenerate the share artifact when source data changes, then review any later publication separately.
 
-## Daily visitor voting
+## Source rules and current uncertainty
 
-The voting feature lets visitors choose **Approve** or **Not convinced** on each published daily update. The existing day strip opens historical polls. Pending days and future days have no poll; publishing an update makes its date/day poll eligible automatically. Voting expresses visitor opinion and never edits the owner's update, status, summary, or source.
+`data.json` holds Tibo day records (unchanged; the live Worker validates it strictly); `versus.json` holds the top-level teams plus aligned per-day numbered update lists for both sides: `days[].tibo` (taken from the numbered items already in `data.json`'s summaries) and `days[].grokbot`. The read-only adapter loads both and requires their calendars to match. Both actual files and their strict schemas are preserved; unknown fields are rejected. See [counting rules](docs/versus-rules.md) and [full repository audit](docs/repository-audit.md).
 
-Each poll has a permanent `codex-28:YYYY-MM-DD:day-N` identifier. Counts and the original vote stay attached to that day through refreshes, new days, and same-day text or status edits. The UI shows counts, percentages, loading, retry, and unavailable states. It never substitutes browser-local totals for shared results.
+Both sides are counted the same way: **every listed shipped update is one hit**, shown per day from Day 1. Usage resets come from `data.json`'s day status, show on their day as a USAGE RESET card and have their own counter, but never count as hits and never zero out that day's launches. Current totals: **Tibo 11 hits / 2 resets, Grok Bot 11 hits / 0 resets.** Each round goes to the side with more improvements that day; equal counts draw; a day where either side is still pending is UNRESOLVED. A final KO after round 28 uses greater total hits; ties draw. No winner is invented.
 
-Shared votes use the separate Cloudflare Worker/D1 implementation described in [backend/README.md](backend/README.md). The approved production backend is deployed at `https://codex-28-voting.ryanatcdr.workers.dev` on the account's verified **Workers Free** plan. `voting-config.json` points to that HTTPS endpoint. The voting UI is published at the existing GitHub Pages URL. Public reads and isolated remote vote, duplicate, concurrency, history, and restart checks pass. See the dated [voting release evidence](DEPLOYMENT.md#daily-voting-release-evidence--october-8-2026) for the current release status. The existing GitHub Pages URL, design, and authoritative standalone `data.json` remain the same.
+The second fighter is **Lauren Tan (@poteto, she/her)**, using `assets/poteto.jpg` on the right. Tibo uses `assets/tibo.jpg` on the left. The October 5–November 1 window is this project's counting convention, not a verified official schedule. The countdown uses America/Los_Angeles and respects the 25-hour final DST day.
 
-The browser stores a random identifier only for duplicate prevention. The database enforces one immutable vote per identifier per poll. Clearing storage, private browsing, or using another browser can allow another vote; this is a browser poll, not a verified one-person ballot. Browsers that cannot persist the identifier can read results but cannot vote. No account or tracking cookie is required.
+`data.json` SHA-256 before/after:
 
-Run `npm run check` for syntax, model, frontend and SQLite backend tests. Backend tests require Node.js 22.16+ (`node:sqlite` and its [statement metadata API](https://nodejs.org/api/sqlite.html#statementcolumns)). Run `npm run voting:dev` for a local persistent SQLite API on `127.0.0.1:8787`. `npm run test:voting-browser` starts isolated local servers and runs Python Playwright checks; Python Playwright and Chromium must already be installed. The browser tests override configuration/data only inside their test context and leave public files unchanged.
+```
+d3afceec07918f307e4e391afa8e5b2d1c7f862ba50c3221e14ac6702578a926
+```
 
-## Public data
+At audited heads `main` 6096c53 and `gh-pages` 73b6bcb, data bytes and every shared public file match. The branch differences are 18 source-only docs/backend/tests/tooling files. This task does not write either branch or reconcile anything.
 
-`data.json` is fetched as a separate public file at runtime. It is neither imported into JavaScript nor compiled into the UI. Each load and refresh uses `cache: 'no-store'` and a cache-busting query parameter. Relative asset URLs and the module-relative JSON URL support a GitHub Pages project subpath such as `/codex-28/`.
+## Team poll extension and setup
 
-Every object must have exactly the documented keys. Missing or extra keys are rejected.
+Read [backend/team-polls-README.md](backend/team-polls-README.md) for the extension contract and manual setup checklist. The existing Worker/D1 can support two-team voting: separate `/teams/YYYY-MM-DD` routes and `team_polls` / `team_votes` tables reuse its transactional batch, primary reads, bound SQL and saved browser identity. `/polls/...`, its `polls` / `votes` tables, migration 0001 and `model.js` remain compatible. The additive migration does not convert or overwrite approval history. No Firebase or Supabase replacement is needed.
 
-| Root key | Rule |
-| --- | --- |
-| `startDate` | A real calendar date in exact `YYYY-MM-DD` format. Initially `2026-10-05`. |
-| `endDate` | A real `YYYY-MM-DD` date exactly 27 calendar days after `startDate`, making 28 inclusive days. Initially `2026-11-01`. |
-| `timezone` | A named IANA timezone supported by `Intl.DateTimeFormat`, with no surrounding whitespace or numeric offset. Initially `America/Los_Angeles`. |
-| `source` | A plain HTTPS X profile or post URL, at most 250 characters. Initially `https://x.com/thsottiaux`. |
-| `days` | Exactly 28 objects, in ascending consecutive day order. |
-| `updatedAt` | A valid ISO timestamp with seconds and an explicit `Z` or `±HH:MM` offset. Optional fractional seconds have one to three digits. |
-
-Each object in `days` has these five keys:
-
-| Day key | Rule |
-| --- | --- |
-| `day` | An integer from 1 through 28, matching its array position. |
-| `date` | The exact consecutive `YYYY-MM-DD` date for that day. |
-| `status` | Exactly `improvement`, `reset`, `pending`, or `missed`. |
-| `summary` | Plain text of at most 500 characters. A non-pending result requires a nonblank explanation. Empty text is allowed for pending days. |
-| `tweetUrl` | `null`, or a plain HTTPS X post URL. |
-
-A pending entry looks like this:
+Configuration belongs only in `versus-config.json`:
 
 ```json
-{
-  "day": 1,
-  "date": "2026-10-05",
-  "status": "pending",
-  "summary": "",
-  "tweetUrl": null
-}
+{"apiBaseUrl": null}
 ```
 
-X URLs may use only `x.com` or `www.x.com`, followed by a 1–15 character username of letters, digits, or underscores. A post path adds `/status/` and a numeric ID. A trailing slash is allowed. Queries, fragments, whitespace, credentials, explicit ports, other hosts, and non-HTTPS schemes are rejected. `tweetUrl` requires the post form; `source` also permits a profile. Add actual source URLs, never placeholder or invented post links.
+A future separately approved setup would inspect the existing dedicated D1 migration history and Worker settings, review/apply only the additive team migration, test the extended Worker in isolation, then set this URL to the same reviewed public Worker endpoint. Preserve `voting-config.json`. No account or browser credential is needed. None of those cloud or publication steps was performed by this draft.
 
-`1970-01-01T00:00:00.000Z` is the explicit **never updated** sentinel. It is not a claimed reporting date, and it is valid only while every day is pending. When entering real results, set `updatedAt` to the actual manual update time. Data at least 24 hours old is labeled potentially stale. A timestamp more than five minutes ahead of the current clock receives a warning rather than being silently treated as fresh.
+This is one saved browser/device identity per PT day, not one verified person. Clearing storage or using another device can allow another identity. Atomic D1 uniqueness prevents repeated accepted votes for the same identity/day; Web Locks and saved original-choice hints handle ordinary tabs and ambiguous retries. Any provider rate-limiting binding is optional proposed configuration, not enabled or evidence of global per-IP enforcement. See backend docs for the tested limits and remaining abuse risk.
 
-The schema is enforced in `model.js`; public text is inserted with `textContent`, and source links are validated before rendering. Invalid JSON, invalid schema, HTTP errors, and a 10-second fetch timeout show an unavailable state and a refresh button. A failed refresh keeps the last successfully loaded data visible with a clear warning. There is no fabricated fallback result.
+Counts refresh every 15 seconds while visible and on returning to the tab. Errors retain labeled last-loaded counts, block speculative switching and offer reconciliation/retry. New votes leave white damage trails and a short shake; synthetic hit audio starts muted and needs a gesture to enable. Reduced motion removes movement and flashing. Health follows the exact requested opponent-vote formula and bottoms out at 10%, so the strict `<10` flashing threshold is unreachable with valid votes.
 
-## Counting and editing outcomes
+## Preserve the live approval poll
 
-The day counter uses the calendar date in `America/Los_Angeles`, independently of browser locale or timezone. Before the window it shows day 0; during the window it shows days 1–28; afterward it stays at 28. It updates while a tab remains open across midnight.
+`app.js`, `polls.js`, `styles.css`, `voting-config.json`, `model.js`, migration 0001 and their existing tests remain unchanged. The Worker adds only a separate route dispatch; the approval handler retains its original behavior. The round log reuses the existing client/config for each eligible Tibo update. The original entry page is also preserved at [legacy/index.html](legacy/index.html), with its old documentation in [legacy/README.md](legacy/README.md). Both UIs can contact the configured existing approval endpoint when opened; browser QA intercepts those requests.
 
-Pending days on or before the local current date are “awaiting a source report”; later pending days are “future day · check-in ahead.” The pending counter includes both and displays the breakdown. Time passing never changes a pending result to `missed`. Record `missed` only as an explicit, sourced manual decision, with an explanation. Reports can be added after the counting window closes.
+Do not convert approve/not_convinced votes into Dots/Bots votes: they answer different questions. Preserve the current Cloudflare database/history. Any later release must review the additive extension and frontend publication independently. This draft does not migrate live records, retire resources, deploy, merge, publish or change Pages settings. [DEPLOYMENT.md](DEPLOYMENT.md) describes the **historical live release**, not authorization to deploy this draft.
 
-To update:
+## Design and licenses
 
-1. Read the relevant source post and edit only the appropriate day entry in `data.json`.
-2. Set the status, a concise factual summary, and the real post URL when available. Leave unknown outcomes pending.
-3. Replace the sentinel with the actual update timestamp. Retain the date range and timezone unless deliberately changing the tracker's convention.
-4. Validate the file and review the preview:
-
-   ```sh
-   node --input-type=module -e 'import { readFile } from "node:fs/promises"; import { validateData } from "./model.js"; validateData(JSON.parse(await readFile("data.json", "utf8"))); console.log("data.json is valid");'
-   npm run check
-   ```
-
-5. Commit the source JSON and publish that same file to the root of the `gh-pages` branch. See [DEPLOYMENT.md](DEPLOYMENT.md) for the JSON-only update procedure.
-
-No UI rebuild is needed to change the data's meaning: the browser reads the standalone JSON. **GitHub Pages still needs a commit and a deployment of the changed JSON.** Editing a local file does not update the live site. Keep the source branch's `data.json` and the deployed branch's copy identical.
-
-## Interaction and accessibility
-
-Day buttons reveal their result and source without changing data. Tab reaches the selected day; arrow keys move among days, and Home / End select the first / last day. Buttons announce their date, status, and whether they are awaiting a report or still ahead. Statuses have text labels in addition to color, and day details use a polite live region.
-
-The four matching Dot Launcher characters can be dragged within their own play area. Tap or press Enter / Space for a small cheer; arrow keys move a focused dot, and Home returns it to its starting position. Release gives a restrained bounce. Scrolling works outside the dot buttons. These reactions never change scoreboard data. Reduced-motion preferences disable decorative animation. Share opens an X compose intent for the current page; it does not post automatically. Copy link uses the clipboard API and reveals a selected manual-copy field if clipboard access fails. No JavaScript is required to reach the source profile or raw public data.
-
-## Hosting and project scope
-
-The repository is [minutechreview/codex-28](https://github.com/minutechreview/codex-28), with the live GitHub Pages URL [minutechreview.github.io/codex-28/](https://minutechreview.github.io/codex-28/). The actual remote commits, successful Pages build, and live file checks are recorded in [deployment evidence](DEPLOYMENT.md#deployment-evidence).
-
-The frontend uses free GitHub Pages hosting; shared visitor voting adds the dedicated Cloudflare Worker and D1 database on the existing Workers Free plan. There is no visitor login, paid API, X scraper, or daily watcher. Analytics is an inactive placeholder comment; there is no active tracking script or analytics account. The approved setup uses the existing GitHub and Cloudflare accounts with the reviewed Cloudflare permissions and the default `workers.dev` address. It does not include a paid upgrade, custom domain, DNS change, or broader access grant. Free service quotas can make voting unavailable; see the current [D1 limits and pricing](https://developers.cloudflare.com/d1/platform/pricing/) and [Workers pricing](https://developers.cloudflare.com/workers/platform/pricing/).
-
-## License
-
-Code and documentation are [MIT licensed](LICENSE). Original artwork has its own terms in [assets/LICENSE.txt](assets/LICENSE.txt), which lists the included assets and provenance. The dot artwork is fan-project illustration, not official OpenAI, Codex, ChatGPT, or X artwork. Keep the asset license file with redistributed artwork.
+Original pixel borders, nameplates and cabinet-style layout evoke the genre without using Street Fighter, Sega or Tekken artwork/logos. Press Start 2P is bundled unchanged from Google Fonts and distributed under SIL Open Font License 1.1; see [assets/FONT-LICENSE.txt](assets/FONT-LICENSE.txt). Sans-serif body copy keeps longer source summaries readable. Code is [MIT](LICENSE). Existing dot artwork provenance remains in [assets/LICENSE.txt](assets/LICENSE.txt). Existing portrait files are retained unchanged; this draft does not assert new rights to them. The static share image includes those supplied portraits for this fan tracker.

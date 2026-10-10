@@ -1,4 +1,5 @@
 import { validateData, dateInTimezone } from "../model.js";
+import { createTeamVotingWorker } from "./team-polls.js";
 
 export const SOURCE_URL = "https://minutechreview.github.io/codex-28/data.json";
 export const SITE_ORIGIN = "https://minutechreview.github.io";
@@ -71,8 +72,10 @@ function resultPayload(pollId, row) {
 export function createVotingWorker({ fetchSource = globalThis.fetch, now = () => new Date(),
   allowedOrigins = [SITE_ORIGIN], sourceUrl = SOURCE_URL } = {}) {
   const origins = new Set(allowedOrigins);
+  const teamWorker = createTeamVotingWorker({ fetchSource, now, allowedOrigins, sourceUrl });
   return {
     async fetch(request, env) {
+      if (new URL(request.url).pathname.startsWith("/teams/")) return teamWorker.fetch(request, env);
       const origin = request.headers.get("origin");
       const headers = new Headers({
         "Content-Type": "application/json; charset=utf-8",

@@ -11,7 +11,7 @@
       "role": "Codex & ChatGPT at OpenAI",
       "avatar": "assets/tibo.jpg",
       "product": "Codex / ChatGPT / Dots",
-      "entriesSource": "data.json"
+      "entriesSource": "versus.json#days[].tibo"
     },
     "bots": {
       "team": "Team Bots",
@@ -28,6 +28,14 @@
     {
       "day": 1,
       "date": "2026-10-05",
+      "tibo": [
+        {
+          "number": "1.1",
+          "summary": "Default speed ~50% faster across GPT-6 Astra and GPT-6.1 Sol for subscribers and Sign in With ChatGPT partners (OpenCode, Pi, Amp, Devin, etc.), no user action needed.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2107158998495748264",
+          "status": "improvement"
+        }
+      ],
       "grokbot": [
         {
           "number": "1.1",
@@ -35,13 +43,40 @@
           "tweetUrl": "https://x.com/ericzakariasson/status/2107161574247129284",
           "postedAt": "2026-10-05T10:30:43-07:00",
           "announcedBy": "ericzakariasson",
-          "potetoUrl": "https://x.com/poteto/status/2107161958017585432"
+          "potetoUrl": "https://x.com/poteto/status/2107161958017585432",
+          "status": "improvement"
         }
       ]
     },
     {
       "day": 2,
       "date": "2026-10-06",
+      "tibo": [
+        {
+          "number": "2.1",
+          "summary": "Auto-review free for ChatGPT sign-ins.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2107368734981517634",
+          "status": "improvement"
+        },
+        {
+          "number": "2.2",
+          "summary": "Simpler API rate-limit tiers.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2107368734981517634",
+          "status": "improvement"
+        },
+        {
+          "number": "2.3",
+          "summary": "Meetings note-taker plugin.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2107368734981517634",
+          "status": "improvement"
+        },
+        {
+          "number": "2.4",
+          "summary": "Decisions API.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2107368734981517634",
+          "status": "improvement"
+        }
+      ],
       "grokbot": [
         {
           "number": "2.1",
@@ -49,13 +84,28 @@
           "tweetUrl": "https://x.com/larsencc/status/2107616555685360072",
           "postedAt": "2026-10-06T16:38:39-07:00",
           "announcedBy": "larsencc",
-          "potetoUrl": "https://x.com/poteto/status/2107634927617638858"
+          "potetoUrl": "https://x.com/poteto/status/2107634927617638858",
+          "status": "improvement"
         }
       ]
     },
     {
       "day": 3,
       "date": "2026-10-07",
+      "tibo": [
+        {
+          "number": "3.1",
+          "summary": "GPT-6 with Intelligent UI rolled out to all ChatGPT users.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2107913674593644711",
+          "status": "improvement"
+        },
+        {
+          "number": "3.2",
+          "summary": "Codex Cloud silently re-shipped (late evening PT encore); Tibo says it's \"pretty good now\", quoting the new Codex Cloud + Tailscale tailnet integration.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2107913674593644711",
+          "status": "improvement"
+        }
+      ],
       "grokbot": [
         {
           "number": "3.1",
@@ -63,7 +113,8 @@
           "tweetUrl": "https://x.com/poteto/status/2107728968501903652",
           "postedAt": "2026-10-07T00:05:20-07:00",
           "announcedBy": "elonmusk",
-          "potetoUrl": "https://x.com/poteto/status/2107732132416368654"
+          "potetoUrl": "https://x.com/poteto/status/2107732132416368654",
+          "status": "improvement"
         },
         {
           "number": "3.2",
@@ -71,7 +122,8 @@
           "tweetUrl": "https://x.com/ericzakariasson/status/2107887770937283028",
           "postedAt": "2026-10-07T10:36:21-07:00",
           "announcedBy": "ericzakariasson",
-          "potetoUrl": "https://x.com/poteto/status/2107899902013657228"
+          "potetoUrl": "https://x.com/poteto/status/2107899902013657228",
+          "status": "improvement"
         },
         {
           "number": "3.3",
@@ -79,13 +131,28 @@
           "tweetUrl": "https://x.com/bot/status/2107949161878606089",
           "postedAt": "2026-10-07T14:40:18-07:00",
           "announcedBy": "bot",
-          "potetoUrl": "https://x.com/poteto/status/2107963437154435182"
+          "potetoUrl": "https://x.com/poteto/status/2107963437154435182",
+          "status": "improvement"
         }
       ]
     },
     {
       "day": 4,
       "date": "2026-10-08",
+      "tibo": [
+        {
+          "number": "4.1",
+          "summary": "Instant steering: the model reacts much faster to adjustments and course-corrects in realtime without wasting effort.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2108275041276420573",
+          "status": "improvement"
+        },
+        {
+          "number": "4.2",
+          "summary": "GPT-6.1 Sol ultrafast rolling out in API, Codex, and ChatGPT Work (near-Astra intelligence at up to 8x Sol Standard).",
+          "tweetUrl": "https://x.com/thsottiaux/status/2108275041276420573",
+          "status": "improvement"
+        }
+      ],
       "grokbot": [
         {
           "number": "4.1",
@@ -93,13 +160,28 @@
           "tweetUrl": "https://x.com/bot/status/2108228871938359347",
           "postedAt": "2026-10-08T09:11:46-07:00",
           "announcedBy": "bot",
-          "potetoUrl": "https://x.com/poteto/status/2108234315096330255"
+          "potetoUrl": "https://x.com/poteto/status/2108234315096330255",
+          "status": "improvement"
         }
       ]
     },
     {
       "day": 5,
       "date": "2026-10-09",
+      "tibo": [
+        {
+          "number": "5.1",
+          "summary": "Composer predictions in the Codex desktop app (beta): Codex suggests your next message based on the conversation and how you talk to it; included in Pro plans without consuming usage.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2108645667451318747",
+          "status": "improvement"
+        },
+        {
+          "number": "5.2",
+          "summary": "Dots edition: you can now create and text your dot entirely from the ChatGPT mobile app on iOS and Android.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2108645667451318747",
+          "status": "improvement"
+        }
+      ],
       "grokbot": [
         {
           "number": "5.1",
@@ -107,7 +189,8 @@
           "tweetUrl": "https://x.com/johnbai/status/2108602230232461767",
           "postedAt": "2026-10-09T09:55:22-07:00",
           "announcedBy": "johnbai",
-          "potetoUrl": "https://x.com/poteto/status/2108603981132124594"
+          "potetoUrl": "https://x.com/poteto/status/2108603981132124594",
+          "status": "improvement"
         },
         {
           "number": "5.2",
@@ -115,7 +198,8 @@
           "tweetUrl": "https://x.com/bot/status/2108609764766908772",
           "postedAt": "2026-10-09T10:25:18-07:00",
           "announcedBy": "bot",
-          "potetoUrl": "https://x.com/poteto/status/2108613514575446368"
+          "potetoUrl": "https://x.com/poteto/status/2108613514575446368",
+          "status": "improvement"
         },
         {
           "number": "5.3",
@@ -123,13 +207,15 @@
           "tweetUrl": "https://x.com/ericzakariasson/status/2108645012644991251",
           "postedAt": "2026-10-09T12:45:22-07:00",
           "announcedBy": "ericzakariasson",
-          "potetoUrl": "https://x.com/poteto/status/2108651351542829341"
+          "potetoUrl": "https://x.com/poteto/status/2108651351542829341",
+          "status": "improvement"
         }
       ]
     },
     {
       "day": 6,
       "date": "2026-10-10",
+      "tibo": [],
       "grokbot": [
         {
           "number": "6.1",
@@ -137,7 +223,8 @@
           "tweetUrl": "https://x.com/poteto/status/2109022078573879572",
           "postedAt": "2026-10-10T13:43:41-07:00",
           "announcedBy": "poteto",
-          "potetoUrl": null
+          "potetoUrl": null,
+          "status": "improvement"
         },
         {
           "number": "6.2",
@@ -145,118 +232,141 @@
           "tweetUrl": "https://x.com/poteto/status/2109034028984926302",
           "postedAt": "2026-10-10T14:31:11-07:00",
           "announcedBy": "poteto",
-          "potetoUrl": null
+          "potetoUrl": null,
+          "status": "improvement"
         }
       ]
     },
     {
       "day": 7,
       "date": "2026-10-11",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 8,
       "date": "2026-10-12",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 9,
       "date": "2026-10-13",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 10,
       "date": "2026-10-14",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 11,
       "date": "2026-10-15",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 12,
       "date": "2026-10-16",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 13,
       "date": "2026-10-17",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 14,
       "date": "2026-10-18",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 15,
       "date": "2026-10-19",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 16,
       "date": "2026-10-20",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 17,
       "date": "2026-10-21",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 18,
       "date": "2026-10-22",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 19,
       "date": "2026-10-23",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 20,
       "date": "2026-10-24",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 21,
       "date": "2026-10-25",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 22,
       "date": "2026-10-26",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 23,
       "date": "2026-10-27",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 24,
       "date": "2026-10-28",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 25,
       "date": "2026-10-29",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 26,
       "date": "2026-10-30",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 27,
       "date": "2026-10-31",
+      "tibo": [],
       "grokbot": []
     },
     {
       "day": 28,
       "date": "2026-11-01",
+      "tibo": [],
       "grokbot": []
     }
   ],

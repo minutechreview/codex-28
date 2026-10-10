@@ -1,0 +1,42 @@
+{
+  "title": "CODEX 28 — TEAM DOTS VS TEAM BOTS",
+  "description": "Team Dots: 11 confirmed hits, 2 resets, 23 pending days. Team Bots: 11 confirmed hits, 0 resets, 0 pending days.",
+  "imageAlt": "Original arcade VERSUS card with portraits of Tibo and Lauren Tan. Team Dots: 11 confirmed hits, 2 resets, 23 pending days. Team Bots: 11 confirmed hits, 0 resets, 0 pending days.",
+  "imageUrl": "https://minutechreview.github.io/codex-28/assets/versus-share.png",
+  "imageWidth": 1200,
+  "imageHeight": 630,
+  "currentDate": "2026-10-10",
+  "round": 6,
+  "totalRounds": 28,
+  "phase": "active",
+  "counters": {
+    "dots": {
+      "confirmedHits": 11,
+      "confirmedResets": 2,
+      "unclassified": 0,
+      "pending": 23,
+      "reported": 13,
+      "hits": 11,
+      "resets": 2,
+      "classificationKnown": true
+    },
+    "bots": {
+      "confirmedHits": 11,
+      "confirmedResets": 0,
+      "unclassified": 0,
+      "pending": 0,
+      "reported": 11,
+      "hits": 11,
+      "resets": 0,
+      "classificationKnown": true
+    }
+  },
+  "sourceUpdatedAt": {
+    "dots": "2026-10-09T19:55:00.000Z",
+    "bots": "2026-10-10T22:24:48.000Z"
+  },
+  "hashes": {
+    "data.json": "d3afceec07918f307e4e391afa8e5b2d1c7f862ba50c3221e14ac6702578a926",
+    "versus.json": "5292671f3053418590d07ee6694df978328ea54f3ee781c09b73e335dba8ca0c"
+  }
+}

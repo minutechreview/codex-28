@@ -3,11 +3,14 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import { createVotingWorker } from "../backend/worker.js";
 import { SQLiteD1 } from "../tests/helpers/sqlite-d1.js";
+import { teamMigration } from "../tests/helpers/team-sqlite-d1.js";
 
 const port = Number(process.env.VOTING_PORT || process.env.VOTING_DEV_PORT || 8787);
 const sourcePath = resolve(process.env.VOTING_DATA_PATH || process.env.VOTING_DEV_SOURCE || "data.json");
 const databasePath = resolve(process.env.VOTING_DB_PATH || process.env.VOTING_DEV_DB || ".local-voting.sqlite");
 const db = new SQLiteD1(databasePath);
+// Local fixture only; never connects to the existing Cloudflare database.
+db.database.exec(teamMigration);
 const worker = createVotingWorker({
   allowedOrigins: ["http://127.0.0.1:4173", "http://127.0.0.1:4174", "http://127.0.0.1:4175", "http://127.0.0.1:4176"],
   now: () => process.env.VOTING_DEV_NOW ? new Date(process.env.VOTING_DEV_NOW) : new Date(),

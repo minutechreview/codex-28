@@ -12,3 +12,6 @@ test-results/
 .dev.vars*
 backend/wrangler.jsonc
 .local-voting.sqlite*
+
+__pycache__/
+*.pyc

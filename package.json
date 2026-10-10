@@ -3,17 +3,21 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22.16.0" },
-  "description": "An original static, unofficial 28-day Codex fan scoreboard",
+  "engines": {
+    "node": ">=22.16.0"
+  },
+  "description": "Original retro arcade VERSUS fan tracker for Dots and Bots",
   "scripts": {
     "start": "python3 -m http.server 4173 --bind 127.0.0.1",
     "test": "node --test tests/*.test.js",
-    "lint": "node --check app.js && node --check model.js && node --check polls.js && node --check backend/worker.js && node --check scripts/build.js && node --check scripts/voting-dev-server.js && node --check scripts/run-voting-browser-qa.js",
+    "lint": "node --check app.js && node --check model.js && node --check polls.js && node --check backend/worker.js && node --check scripts/build.js && node --check scripts/voting-dev-server.js && node --check scripts/run-voting-browser-qa.js && node --check versus-app.js && node --check versus-model.js && node --check versus-poll.js && node --check scripts/generate-versus-share.js && node --check backend/team-polls.js && node --check versus-update-polls.js",
     "voting:dev": "node scripts/voting-dev-server.js",
     "pretest:voting-browser": "npm run build",
     "test:voting-browser": "node scripts/run-voting-browser-qa.js",
     "build": "node scripts/build.js",
-    "check": "npm run lint && npm test && npm run build"
+    "check": "npm run lint && npm test && npm run build",
+    "test:versus-browser": "python3 scripts/versus-browser-qa.py",
+    "share:generate": "node scripts/generate-versus-share.js && python3 scripts/render-versus-share.py"
   },
   "license": "MIT"
 }
