@@ -42,9 +42,9 @@
     {
       "day": 6,
       "date": "2026-10-10",
-      "status": "pending",
-      "summary": "",
-      "tweetUrl": null
+      "status": "reset",
+      "summary": "Global usage reset for everyone (propagated by end of day).",
+      "tweetUrl": "https://x.com/thsottiaux/status/2109045220411351517"
     },
     {
       "day": 7,
@@ -201,5 +201,5 @@
       "tweetUrl": null
     }
   ],
-  "updatedAt": "2026-10-09T19:55:00.000Z"
+  "updatedAt": "2026-10-11T20:14:00.000Z"
 }
