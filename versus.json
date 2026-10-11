@@ -215,7 +215,14 @@
     {
       "day": 6,
       "date": "2026-10-10",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "6.1",
+          "summary": "Global usage reset for everyone (propagated by end of day).",
+          "tweetUrl": "https://x.com/thsottiaux/status/2109045220411351517",
+          "status": "reset"
+        }
+      ],
       "grokbot": [
         {
           "number": "6.1",
