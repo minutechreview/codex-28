@@ -253,9 +253,25 @@
           "summary": "Default context length for GPT-6.1 Sol increased to 500k when used through Codex & Work, up from 272k (~80%). It reduces compactions and helps tasks that need a lot of context and nuance over time; carefully tested as the new sweet spot, still overridable higher or lower, with a 1M maximum.",
           "tweetUrl": "https://x.com/thsottiaux/status/2109430343346581527",
           "status": "improvement"
+        },
+        {
+          "number": "7.2",
+          "summary": "No long-context fees for GPT-6.1 Sol when drawing usage from the subscription (with the new 500k default through Codex & Work).",
+          "tweetUrl": "https://x.com/thsottiaux/status/2109430343346581527",
+          "status": "improvement"
         }
       ],
-      "grokbot": []
+      "grokbot": [
+        {
+          "number": "7.1",
+          "summary": "Release 0.70.2: fixed Grok Bot falsely treating the Mac mini / desktop client as offline when it was still awake; rolling out now.",
+          "tweetUrl": "https://x.com/poteto/status/2109437986870100379",
+          "postedAt": "2026-10-11T17:16:22-07:00",
+          "announcedBy": "poteto",
+          "potetoUrl": null,
+          "status": "improvement"
+        }
+      ]
     },
     {
       "day": 8,
@@ -384,5 +400,5 @@
       "grokbot": []
     }
   ],
-  "updatedAt": "2026-10-10T22:24:48.000Z"
+  "updatedAt": "2026-10-12T20:18:21.000Z"
 }
