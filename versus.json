@@ -247,7 +247,14 @@
     {
       "day": 7,
       "date": "2026-10-11",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "7.1",
+          "summary": "Default context length for GPT-6.1 Sol increased to 500k when used through Codex & Work, up from 272k (~80%). It reduces compactions and helps tasks that need a lot of context and nuance over time; carefully tested as the new sweet spot, still overridable higher or lower, with a 1M maximum.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2109430343346581527",
+          "status": "improvement"
+        }
+      ],
       "grokbot": []
     },
     {
