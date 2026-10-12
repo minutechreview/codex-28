@@ -16,7 +16,7 @@ Rayan's rule: count every shipped update/improvement on both sides, shown per da
 
 Each round goes to the side with **more improvements that day**. Equal counts are a **DRAW** (including two empty lanes on a reported day). If either side's day is still **pending** in `data.json`, or any entry is unclassified, the round is **UNRESOLVED**. Empty lanes show **NO MOVE**.
 
-Current rounds: 1 draw (1–1), 2 Team Dots (4–1), 3 Team Bots (3–2), 4 Team Dots (2–1), 5 Team Bots (3–2), 6 Team Bots (2–0). Totals: Tibo 11 hits / 3 resets, Grok Bot 11 hits / 0 resets.
+Current rounds: 1 draw (1–1), 2 Team Dots (4–1), 3 Team Bots (3–2), 4 Team Dots (2–1), 5 Team Bots (3–2), 6 Team Bots (2–0), 7 Team Dots (1–0). Totals: Tibo 12 hits / 3 resets, Grok Bot 11 hits / 0 resets.
 
 A window-end **KO** requires the window to have ended and all records to be classified with no pending days. Winner = greater total hits; equal totals = final draw.
 
