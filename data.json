@@ -50,7 +50,7 @@
       "day": 7,
       "date": "2026-10-11",
       "status": "improvement",
-      "summary": "Default context length for GPT-6.1 Sol increased to 500k when used through Codex & Work, up from 272k (~80%). It reduces compactions and helps tasks that need a lot of context and nuance over time; carefully tested as the new sweet spot, still overridable higher or lower, with a 1M maximum.",
+      "summary": "7.1 Default context length for GPT-6.1 Sol increased to 500k when used through Codex & Work, up from 272k (~80%). It reduces compactions and helps tasks that need a lot of context and nuance over time; carefully tested as the new sweet spot, still overridable higher or lower, with a 1M maximum. 7.2 No long-context fees for GPT-6.1 Sol when drawing usage from the subscription.",
       "tweetUrl": "https://x.com/thsottiaux/status/2109430343346581527"
     },
     {
@@ -201,5 +201,5 @@
       "tweetUrl": null
     }
   ],
-  "updatedAt": "2026-10-12T04:28:00.000Z"
+  "updatedAt": "2026-10-12T20:18:21.000Z"
 }
