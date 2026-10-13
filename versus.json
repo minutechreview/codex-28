@@ -276,7 +276,14 @@
     {
       "day": 8,
       "date": "2026-10-12",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "8.1",
+          "summary": "Global usage reset for everyone, landing by end of day PST; Tibo later confirmed \"It's done.\"",
+          "tweetUrl": "https://x.com/thsottiaux/status/2109812216212099456",
+          "status": "reset"
+        }
+      ],
       "grokbot": []
     },
     {
@@ -400,5 +407,5 @@
       "grokbot": []
     }
   ],
-  "updatedAt": "2026-10-12T20:18:21.000Z"
+  "updatedAt": "2026-10-13T12:09:07.000Z"
 }
