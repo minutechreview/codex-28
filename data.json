@@ -63,9 +63,9 @@
     {
       "day": 9,
       "date": "2026-10-13",
-      "status": "pending",
-      "summary": "",
-      "tweetUrl": null
+      "status": "improvement",
+      "summary": "9.1 ChatGPT & Codex desktop apps now store state on disk more efficiently, cutting the amount stored on disk by about 60% (a fix for power users running out of disk space).",
+      "tweetUrl": "https://x.com/thsottiaux/status/2110151780478927344"
     },
     {
       "day": 10,
@@ -201,5 +201,5 @@
       "tweetUrl": null
     }
   ],
-  "updatedAt": "2026-10-13T12:09:07.000Z"
+  "updatedAt": "2026-10-14T20:13:59.000Z"
 }

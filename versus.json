@@ -289,14 +289,31 @@
     {
       "day": 9,
       "date": "2026-10-13",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "9.1",
+          "summary": "ChatGPT & Codex desktop apps now store state on disk more efficiently, cutting the amount stored on disk by about 60%; a small ship aimed at power users running out of disk space.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2110151780478927344",
+          "status": "improvement"
+        }
+      ],
       "grokbot": []
     },
     {
       "day": 10,
       "date": "2026-10-14",
       "tibo": [],
-      "grokbot": []
+      "grokbot": [
+        {
+          "number": "10.1",
+          "summary": "Grok Voice 3.0, SpaceXAI's new speech-to-speech model, now powers Grok Bot's voice mode (responds in under a second).",
+          "tweetUrl": "https://x.com/SpaceXSI/status/2110416580899168305",
+          "postedAt": "2026-10-14T10:04:57-07:00",
+          "announcedBy": "SpaceXSI",
+          "potetoUrl": "https://x.com/poteto/status/2110419598965387674",
+          "status": "improvement"
+        }
+      ]
     },
     {
       "day": 11,
@@ -407,5 +424,5 @@
       "grokbot": []
     }
   ],
-  "updatedAt": "2026-10-13T12:09:07.000Z"
+  "updatedAt": "2026-10-14T20:13:59.000Z"
 }
