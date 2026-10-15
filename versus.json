@@ -302,7 +302,14 @@
     {
       "day": 10,
       "date": "2026-10-14",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "10.1",
+          "summary": "Global usage reset (Day 10/ Reset); Tibo confirmed \"Done and dusted.\"",
+          "tweetUrl": "https://x.com/thsottiaux/status/2110595484180214059",
+          "status": "reset"
+        }
+      ],
       "grokbot": [
         {
           "number": "10.1",
@@ -312,13 +319,38 @@
           "announcedBy": "SpaceXSI",
           "potetoUrl": "https://x.com/poteto/status/2110419598965387674",
           "status": "improvement"
+        },
+        {
+          "number": "10.2",
+          "summary": "Official Basecamp connector for Grok Bot launched (connect via Connect Apps and search Basecamp).",
+          "tweetUrl": "https://x.com/jasonfried/status/2110469724660441365",
+          "postedAt": "2026-10-14T13:36:07-07:00",
+          "announcedBy": "jasonfried",
+          "potetoUrl": "https://x.com/poteto/status/2110533351862051258",
+          "status": "improvement"
+        },
+        {
+          "number": "10.3",
+          "summary": "Plus aliases for Grok Bot email: send and receive on dedicated aliases, or run routines that only fire for mail to a specific alias.",
+          "tweetUrl": "https://x.com/SamSokolin/status/2110496237241667621",
+          "postedAt": "2026-10-14T15:21:28-07:00",
+          "announcedBy": "SamSokolin",
+          "potetoUrl": "https://x.com/poteto/status/2110506396949365176",
+          "status": "improvement"
         }
       ]
     },
     {
       "day": 11,
       "date": "2026-10-15",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "11.1",
+          "summary": "Landed compute and product changes that very significantly decrease \"Selected model is at capacity\" errors; when it still happens, the request should eventually continue on its own instead of blocking.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2110750421367287996",
+          "status": "improvement"
+        }
+      ],
       "grokbot": []
     },
     {
@@ -424,5 +456,5 @@
       "grokbot": []
     }
   ],
-  "updatedAt": "2026-10-14T20:13:59.000Z"
+  "updatedAt": "2026-10-15T20:14:13.000Z"
 }

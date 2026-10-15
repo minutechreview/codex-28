@@ -1,42 +1,42 @@
 {
   "title": "CODEX 28 — TEAM DOTS VS TEAM BOTS",
-  "description": "Team Dots: 14 confirmed hits, 4 resets, 19 pending days. Team Bots: 13 confirmed hits, 0 resets, 0 pending days.",
-  "imageAlt": "Original arcade VERSUS card with portraits of Tibo and Lauren Tan. Team Dots: 14 confirmed hits, 4 resets, 19 pending days. Team Bots: 13 confirmed hits, 0 resets, 0 pending days.",
+  "description": "Team Dots: 15 confirmed hits, 5 resets, 17 pending days. Team Bots: 15 confirmed hits, 0 resets, 0 pending days.",
+  "imageAlt": "Original arcade VERSUS card with portraits of Tibo and Lauren Tan. Team Dots: 15 confirmed hits, 5 resets, 17 pending days. Team Bots: 15 confirmed hits, 0 resets, 0 pending days.",
   "imageUrl": "https://minutechreview.github.io/codex-28/assets/versus-share.png",
   "imageWidth": 1200,
   "imageHeight": 630,
-  "currentDate": "2026-10-14",
-  "round": 10,
+  "currentDate": "2026-10-15",
+  "round": 11,
   "totalRounds": 28,
   "phase": "active",
   "counters": {
     "dots": {
-      "confirmedHits": 14,
-      "confirmedResets": 4,
+      "confirmedHits": 15,
+      "confirmedResets": 5,
       "unclassified": 0,
-      "pending": 19,
-      "reported": 18,
-      "hits": 14,
-      "resets": 4,
+      "pending": 17,
+      "reported": 20,
+      "hits": 15,
+      "resets": 5,
       "classificationKnown": true
     },
     "bots": {
-      "confirmedHits": 13,
+      "confirmedHits": 15,
       "confirmedResets": 0,
       "unclassified": 0,
       "pending": 0,
-      "reported": 13,
-      "hits": 13,
+      "reported": 15,
+      "hits": 15,
       "resets": 0,
       "classificationKnown": true
     }
   },
   "sourceUpdatedAt": {
-    "dots": "2026-10-14T20:13:59.000Z",
-    "bots": "2026-10-14T20:13:59.000Z"
+    "dots": "2026-10-15T20:14:13.000Z",
+    "bots": "2026-10-15T20:14:13.000Z"
   },
   "hashes": {
-    "data.json": "8e3edfd5e935d991d7b2ccd7a88112cd657355dfcf510bc6e649ba6fe01b1c48",
-    "versus.json": "19c973f4551756e5edfb5f5839b03de4f21d3368e1a115603f21bcfd976e5e70"
+    "data.json": "22264964a6c38e8eab5060da1ca3a945e1433ec09adb645829b0c91c0530b692",
+    "versus.json": "2a549ef1e08bc335035c6dc627529df1123d409e923527d172361d7687b70b30"
   }
 }
