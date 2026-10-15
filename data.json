@@ -70,16 +70,16 @@
     {
       "day": 10,
       "date": "2026-10-14",
-      "status": "pending",
-      "summary": "",
-      "tweetUrl": null
+      "status": "reset",
+      "summary": "Global usage reset (Day 10/ Reset); Tibo confirmed \"Done and dusted.\"",
+      "tweetUrl": "https://x.com/thsottiaux/status/2110595484180214059"
     },
     {
       "day": 11,
       "date": "2026-10-15",
-      "status": "pending",
-      "summary": "",
-      "tweetUrl": null
+      "status": "improvement",
+      "summary": "11.1 Landed compute and product changes that very significantly decrease \"Selected model is at capacity\" errors; when it still happens, the request should eventually continue on its own instead of blocking.",
+      "tweetUrl": "https://x.com/thsottiaux/status/2110750421367287996"
     },
     {
       "day": 12,
@@ -201,5 +201,5 @@
       "tweetUrl": null
     }
   ],
-  "updatedAt": "2026-10-14T20:13:59.000Z"
+  "updatedAt": "2026-10-15T20:14:13.000Z"
 }
