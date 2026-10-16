@@ -357,7 +357,62 @@
       "day": 12,
       "date": "2026-10-16",
       "tibo": [],
-      "grokbot": []
+      "grokbot": [
+        {
+          "number": "12.1",
+          "summary": "Cards in chat have a new design with a cleaner layout.",
+          "tweetUrl": "https://x.com/bot/status/2111184270819803351",
+          "postedAt": "2026-10-16T12:55:28-07:00",
+          "announcedBy": "bot",
+          "potetoUrl": "https://x.com/poteto/status/2111186228662112448",
+          "status": "improvement"
+        },
+        {
+          "number": "12.2",
+          "summary": "Refreshed look for Grok Bot with a new typeface and themes.",
+          "tweetUrl": "https://x.com/bot/status/2111184272933748980",
+          "postedAt": "2026-10-16T12:55:29-07:00",
+          "announcedBy": "bot",
+          "potetoUrl": "https://x.com/poteto/status/2111186228662112448",
+          "status": "improvement"
+        },
+        {
+          "number": "12.3",
+          "summary": "Grok Bot is much faster: computer tasks finish 3x sooner on average, and other replies arrive in less than half the time.",
+          "tweetUrl": "https://x.com/bot/status/2111184275374813362",
+          "postedAt": "2026-10-16T12:55:29-07:00",
+          "announcedBy": "bot",
+          "potetoUrl": "https://x.com/poteto/status/2111186228662112448",
+          "status": "improvement"
+        },
+        {
+          "number": "12.4",
+          "summary": "Notifications now go only to the device you're using.",
+          "tweetUrl": "https://x.com/bot/status/2111184281636909233",
+          "postedAt": "2026-10-16T12:55:31-07:00",
+          "announcedBy": "bot",
+          "potetoUrl": "https://x.com/poteto/status/2111186228662112448",
+          "status": "improvement"
+        },
+        {
+          "number": "12.5",
+          "summary": "Grok Bot can now read X Chat: connect X, then ask Bot to work across your messages.",
+          "tweetUrl": "https://x.com/bot/status/2111184282903523440",
+          "postedAt": "2026-10-16T12:55:31-07:00",
+          "announcedBy": "bot",
+          "potetoUrl": "https://x.com/poteto/status/2111186228662112448",
+          "status": "improvement"
+        },
+        {
+          "number": "12.6",
+          "summary": "New connectors for Robinhood, Coinbase, Trello, PostHog, beehiiv, eToro and more; teams can now submit connectors to the Grok Bot marketplace.",
+          "tweetUrl": "https://x.com/bot/status/2111184284786802881",
+          "postedAt": "2026-10-16T12:55:32-07:00",
+          "announcedBy": "bot",
+          "potetoUrl": "https://x.com/poteto/status/2111186228662112448",
+          "status": "improvement"
+        }
+      ]
     },
     {
       "day": 13,
@@ -456,5 +511,5 @@
       "grokbot": []
     }
   ],
-  "updatedAt": "2026-10-15T20:14:13.000Z"
+  "updatedAt": "2026-10-16T20:15:00.000Z"
 }
