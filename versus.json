@@ -356,7 +356,26 @@
     {
       "day": 12,
       "date": "2026-10-16",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "12.1",
+          "summary": "Improvements to Codex & Work that increase the effective usage you get: context is reused across subagents, kept cached longer, and request routing is improved to raise cache hits.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2111244596131111253",
+          "status": "improvement"
+        },
+        {
+          "number": "12.2",
+          "summary": "GPT-6 Astra Pro in ChatGPT significantly improved for all Pro users: faster responses, better use of plugins and tools, and multiple agents working on parts of a task in parallel.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2111244596131111253",
+          "status": "improvement"
+        },
+        {
+          "number": "12.3",
+          "summary": "Dots now on your Home Screen (update your app to get it).",
+          "tweetUrl": "https://x.com/thsottiaux/status/2111244596131111253",
+          "status": "improvement"
+        }
+      ],
       "grokbot": [
         {
           "number": "12.1",
@@ -417,7 +436,14 @@
     {
       "day": 13,
       "date": "2026-10-17",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "13.1",
+          "summary": "Global usage reset for everyone (Day 13 / limit reset), landing sometime today by end of day PST.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2111492673890824348",
+          "status": "reset"
+        }
+      ],
       "grokbot": []
     },
     {
@@ -511,5 +537,5 @@
       "grokbot": []
     }
   ],
-  "updatedAt": "2026-10-16T20:15:00.000Z"
+  "updatedAt": "2026-10-17T17:14:07.000Z"
 }
