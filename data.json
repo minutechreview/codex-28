@@ -84,16 +84,16 @@
     {
       "day": 12,
       "date": "2026-10-16",
-      "status": "pending",
-      "summary": "",
-      "tweetUrl": null
+      "status": "improvement",
+      "summary": "12.1 Improvements to Codex & Work that increase the effective usage you get: context is reused across subagents, kept cached longer, and request routing is improved to raise cache hits. 12.2 GPT-6 Astra Pro in ChatGPT significantly improved for all Pro users: faster responses, better use of plugins and tools, and multiple agents working on parts of a task in parallel. 12.3 Dots now on your Home Screen (update your app to get it).",
+      "tweetUrl": "https://x.com/thsottiaux/status/2111244596131111253"
     },
     {
       "day": 13,
       "date": "2026-10-17",
-      "status": "pending",
-      "summary": "",
-      "tweetUrl": null
+      "status": "reset",
+      "summary": "Global usage reset for everyone (Day 13 / limit reset), landing sometime today by end of day PST.",
+      "tweetUrl": "https://x.com/thsottiaux/status/2111492673890824348"
     },
     {
       "day": 14,
@@ -201,5 +201,5 @@
       "tweetUrl": null
     }
   ],
-  "updatedAt": "2026-10-15T20:14:13.000Z"
+  "updatedAt": "2026-10-17T17:14:07.000Z"
 }
