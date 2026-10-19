@@ -449,14 +449,31 @@
     {
       "day": 14,
       "date": "2026-10-18",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "14.1",
+          "summary": "Small quality of life improvement: you can now edit previous messages within a thread in the desktop app.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2111990254408434095",
+          "status": "improvement"
+        }
+      ],
       "grokbot": []
     },
     {
       "day": 15,
       "date": "2026-10-19",
       "tibo": [],
-      "grokbot": []
+      "grokbot": [
+        {
+          "number": "15.1",
+          "summary": "Set Grok Bot as your iPhone's Action Button and press it to talk with Bot.",
+          "tweetUrl": "https://x.com/bot/status/2112252507762368684",
+          "postedAt": "2026-10-19T11:40:16-07:00",
+          "announcedBy": "bot",
+          "potetoUrl": "https://x.com/poteto/status/2112261641505231330",
+          "status": "improvement"
+        }
+      ]
     },
     {
       "day": 16,
