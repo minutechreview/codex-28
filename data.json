@@ -98,9 +98,9 @@
     {
       "day": 14,
       "date": "2026-10-18",
-      "status": "pending",
-      "summary": "",
-      "tweetUrl": null
+      "status": "improvement",
+      "summary": "Small quality of life improvement: you can now edit previous messages within a thread in the desktop app.",
+      "tweetUrl": "https://x.com/thsottiaux/status/2111990254408434095"
     },
     {
       "day": 15,
@@ -201,5 +201,5 @@
       "tweetUrl": null
     }
   ],
-  "updatedAt": "2026-10-17T17:14:07.000Z"
+  "updatedAt": "2026-10-19T23:55:00.000Z"
 }

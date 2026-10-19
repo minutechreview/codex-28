@@ -1,42 +1,42 @@
 {
   "title": "CODEX 28 — TEAM DOTS VS TEAM BOTS",
-  "description": "Team Dots: 18 confirmed hits, 6 resets, 15 pending days. Team Bots: 21 confirmed hits, 0 resets, 0 pending days.",
-  "imageAlt": "Original arcade VERSUS card with portraits of Tibo and Lauren Tan. Team Dots: 18 confirmed hits, 6 resets, 15 pending days. Team Bots: 21 confirmed hits, 0 resets, 0 pending days.",
+  "description": "Team Dots: 19 confirmed hits, 6 resets, 14 pending days. Team Bots: 22 confirmed hits, 0 resets, 0 pending days.",
+  "imageAlt": "Original arcade VERSUS card with portraits of Tibo and Lauren Tan. Team Dots: 19 confirmed hits, 6 resets, 14 pending days. Team Bots: 22 confirmed hits, 0 resets, 0 pending days.",
   "imageUrl": "https://minutechreview.github.io/codex-28/assets/versus-share.png",
   "imageWidth": 1200,
   "imageHeight": 630,
-  "currentDate": "2026-10-17",
-  "round": 13,
+  "currentDate": "2026-10-19",
+  "round": 15,
   "totalRounds": 28,
   "phase": "active",
   "counters": {
     "dots": {
-      "confirmedHits": 18,
+      "confirmedHits": 19,
       "confirmedResets": 6,
       "unclassified": 0,
-      "pending": 15,
-      "reported": 24,
-      "hits": 18,
+      "pending": 14,
+      "reported": 25,
+      "hits": 19,
       "resets": 6,
       "classificationKnown": true
     },
     "bots": {
-      "confirmedHits": 21,
+      "confirmedHits": 22,
       "confirmedResets": 0,
       "unclassified": 0,
       "pending": 0,
-      "reported": 21,
-      "hits": 21,
+      "reported": 22,
+      "hits": 22,
       "resets": 0,
       "classificationKnown": true
     }
   },
   "sourceUpdatedAt": {
-    "dots": "2026-10-17T17:14:07.000Z",
+    "dots": "2026-10-19T23:55:00.000Z",
     "bots": "2026-10-17T17:14:07.000Z"
   },
   "hashes": {
-    "data.json": "10b4918d34b3f2661ddb3e7330284addd4adc9daadedcd05ecc8aa9e8ee60701",
-    "versus.json": "fff64d683830b7bf3b7bd8635127499c341427b1c59480e1c5f82f2c5e059745"
+    "data.json": "113d4b4f3e5841a1c6ab675be851bf42c4a24a669e6b5725ed228805e47b7cbe",
+    "versus.json": "83c4793b3be3d32530cb06d8928bc12c63ec9b46eba2c4d4f894ab21acc95a8f"
   }
 }
