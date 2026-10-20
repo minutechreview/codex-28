@@ -462,7 +462,14 @@
     {
       "day": 15,
       "date": "2026-10-19",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "15.1",
+          "summary": "Global usage reset for everyone (\"we're still cooking... and reset. Enjoy.\").",
+          "tweetUrl": "https://x.com/thsottiaux/status/2112432076767289678",
+          "status": "reset"
+        }
+      ],
       "grokbot": [
         {
           "number": "15.1",
@@ -479,7 +486,17 @@
       "day": 16,
       "date": "2026-10-20",
       "tibo": [],
-      "grokbot": []
+      "grokbot": [
+        {
+          "number": "16.1",
+          "summary": "Easier to find, access, and edit the things Bot is doing for you in the right panel.",
+          "tweetUrl": "https://x.com/jennywen/status/2112568369459183652",
+          "postedAt": "2026-10-20T08:35:23-07:00",
+          "announcedBy": "jennywen",
+          "potetoUrl": "https://x.com/poteto/status/2112584409820041443",
+          "status": "improvement"
+        }
+      ]
     },
     {
       "day": 17,
@@ -554,5 +571,5 @@
       "grokbot": []
     }
   ],
-  "updatedAt": "2026-10-17T17:14:07.000Z"
+  "updatedAt": "2026-10-20T20:20:00.000Z"
 }
