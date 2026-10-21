@@ -485,7 +485,14 @@
     {
       "day": 16,
       "date": "2026-10-20",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "16.1",
+          "summary": "Prompt caching for 12 hours in the API, and for logged-in users across Codex & Work the cache is kept forever, so resuming an old conversation always hits the cache with no penalty.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2112712984644784534",
+          "status": "improvement"
+        }
+      ],
       "grokbot": [
         {
           "number": "16.1",
@@ -502,7 +509,17 @@
       "day": 17,
       "date": "2026-10-21",
       "tibo": [],
-      "grokbot": []
+      "grokbot": [
+        {
+          "number": "17.1",
+          "summary": "Grok Bot can now build Pages: reports, memos, and dashboards you can edit together with Bot or have Bot keep up to date.",
+          "tweetUrl": "https://x.com/bot/status/2112992872857252082",
+          "postedAt": "2026-10-21T12:42:13-07:00",
+          "announcedBy": "bot",
+          "potetoUrl": "https://x.com/poteto/status/2112995138717016529",
+          "status": "improvement"
+        }
+      ]
     },
     {
       "day": 18,
@@ -571,5 +588,5 @@
       "grokbot": []
     }
   ],
-  "updatedAt": "2026-10-20T20:20:00.000Z"
+  "updatedAt": "2026-10-21T20:10:28.264Z"
 }
