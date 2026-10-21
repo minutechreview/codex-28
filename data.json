@@ -112,9 +112,9 @@
     {
       "day": 16,
       "date": "2026-10-20",
-      "status": "pending",
-      "summary": "",
-      "tweetUrl": null
+      "status": "improvement",
+      "summary": "Prompt caching for 12 hours in the API, and for logged-in users across Codex & Work the cache is kept forever, so resuming an old conversation always hits the cache with no penalty.",
+      "tweetUrl": "https://x.com/thsottiaux/status/2112712984644784534"
     },
     {
       "day": 17,
@@ -201,5 +201,5 @@
       "tweetUrl": null
     }
   ],
-  "updatedAt": "2026-10-20T20:20:00.000Z"
+  "updatedAt": "2026-10-21T20:10:28.264Z"
 }
