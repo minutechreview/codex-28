@@ -508,7 +508,14 @@
     {
       "day": 17,
       "date": "2026-10-21",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "17.1",
+          "summary": "Day 17 usage reset for everyone (\"Bet you thought we forgot, but no, it's reset day today.\").",
+          "tweetUrl": "https://x.com/thsottiaux/status/2113162277688070445",
+          "status": "reset"
+        }
+      ],
       "grokbot": [
         {
           "number": "17.1",
@@ -525,7 +532,17 @@
       "day": 18,
       "date": "2026-10-22",
       "tibo": [],
-      "grokbot": []
+      "grokbot": [
+        {
+          "number": "18.1",
+          "summary": "Grok Bot can now use your 1Password account: approve the logins you want to share and Bot signs in for you (rolling out over the next few days).",
+          "tweetUrl": "https://x.com/bot/status/2113332983226831339",
+          "postedAt": "2026-10-22T11:13:41-07:00",
+          "announcedBy": "bot",
+          "potetoUrl": "https://x.com/poteto/status/2113338561919696979",
+          "status": "improvement"
+        }
+      ]
     },
     {
       "day": 19,
@@ -588,5 +605,5 @@
       "grokbot": []
     }
   ],
-  "updatedAt": "2026-10-21T20:10:28.264Z"
+  "updatedAt": "2026-10-22T20:10:24.009Z"
 }
