@@ -119,9 +119,9 @@
     {
       "day": 17,
       "date": "2026-10-21",
-      "status": "pending",
-      "summary": "",
-      "tweetUrl": null
+      "status": "reset",
+      "summary": "Day 17 usage reset for everyone (\"Bet you thought we forgot, but no, it's reset day today.\").",
+      "tweetUrl": "https://x.com/thsottiaux/status/2113162277688070445"
     },
     {
       "day": 18,
@@ -201,5 +201,5 @@
       "tweetUrl": null
     }
   ],
-  "updatedAt": "2026-10-21T20:10:28.264Z"
+  "updatedAt": "2026-10-22T20:10:24.009Z"
 }
