@@ -531,7 +531,14 @@
     {
       "day": 18,
       "date": "2026-10-22",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "18.1",
+          "summary": "Day 18 usage reset for everyone, alongside Decisions API going GA, OpenResponses joining the Linux Foundation, performance improvements, and Uber going all-in on Codex & Work (\"But yes… that’s a reset!\").",
+          "tweetUrl": "https://x.com/thsottiaux/status/2113492187770175603",
+          "status": "reset"
+        }
+      ],
       "grokbot": [
         {
           "number": "18.1",
@@ -541,6 +548,15 @@
           "announcedBy": "bot",
           "potetoUrl": "https://x.com/poteto/status/2113338561919696979",
           "status": "improvement"
+        },
+        {
+          "number": "18.2",
+          "summary": "Grok Bot can now use Calendar, Reminders, Contacts, and more apps on your phone (rolling out on iOS and Android).",
+          "tweetUrl": "https://x.com/bot/status/2113393684209176718",
+          "postedAt": "2026-10-22T15:14:53-07:00",
+          "announcedBy": "bot",
+          "potetoUrl": "https://x.com/poteto/status/2113411672815944075",
+          "status": "improvement"
         }
       ]
     },
@@ -548,7 +564,17 @@
       "day": 19,
       "date": "2026-10-23",
       "tibo": [],
-      "grokbot": []
+      "grokbot": [
+        {
+          "number": "19.1",
+          "summary": "Grok Bot can now save your logins, cards, and contact information: add them once and Bot securely remembers them.",
+          "tweetUrl": "https://x.com/bot/status/2113717946019397910",
+          "postedAt": "2026-10-23T12:43:23-07:00",
+          "announcedBy": "bot",
+          "potetoUrl": "https://x.com/poteto/status/2113723252942241975",
+          "status": "improvement"
+        }
+      ]
     },
     {
       "day": 20,
@@ -605,5 +631,5 @@
       "grokbot": []
     }
   ],
-  "updatedAt": "2026-10-22T20:10:24.009Z"
+  "updatedAt": "2026-10-23T20:10:24.000Z"
 }
