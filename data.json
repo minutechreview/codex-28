@@ -126,9 +126,9 @@
     {
       "day": 18,
       "date": "2026-10-22",
-      "status": "pending",
-      "summary": "",
-      "tweetUrl": null
+      "status": "reset",
+      "summary": "Day 18 usage reset for everyone, alongside Decisions API going GA, OpenResponses joining the Linux Foundation, performance improvements, and Uber going all-in on Codex & Work (\"But yes… that’s a reset!\").",
+      "tweetUrl": "https://x.com/thsottiaux/status/2113492187770175603"
     },
     {
       "day": 19,
@@ -201,5 +201,5 @@
       "tweetUrl": null
     }
   ],
-  "updatedAt": "2026-10-22T20:10:24.009Z"
+  "updatedAt": "2026-10-23T20:10:24.000Z"
 }
