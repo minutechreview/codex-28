@@ -563,7 +563,14 @@
     {
       "day": 19,
       "date": "2026-10-23",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "19.1",
+          "summary": "Small updates: calls connect much faster for Dots, changing reasoning mid-conversation in Codex & Work no longer invalidates the cache, and an updated Codex CLI.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2113770573994299544",
+          "status": "improvement"
+        }
+      ],
       "grokbot": [
         {
           "number": "19.1",
@@ -572,6 +579,24 @@
           "postedAt": "2026-10-23T12:43:23-07:00",
           "announcedBy": "bot",
           "potetoUrl": "https://x.com/poteto/status/2113723252942241975",
+          "status": "improvement"
+        },
+        {
+          "number": "19.2",
+          "summary": "Release 0.75.5 is stable: Bots forward email with the original formatting and attachments, and there are fewer approval cards for things you asked for.",
+          "tweetUrl": "https://x.com/ericzakariasson/status/2113743401975963908",
+          "postedAt": "2026-10-23T14:24:33-07:00",
+          "announcedBy": "ericzakariasson",
+          "potetoUrl": "https://x.com/poteto/status/2113745636382343364",
+          "status": "improvement"
+        },
+        {
+          "number": "19.3",
+          "summary": "New streaming dictation experience in Grok Bot, rolling out on mobile in version 1.18.",
+          "tweetUrl": "https://x.com/parker__conrad/status/2113749314191393210",
+          "postedAt": "2026-10-23T14:48:02-07:00",
+          "announcedBy": "parker__conrad",
+          "potetoUrl": "https://x.com/poteto/status/2113759949922971933",
           "status": "improvement"
         }
       ]
@@ -631,5 +656,5 @@
       "grokbot": []
     }
   ],
-  "updatedAt": "2026-10-23T20:10:24.000Z"
+  "updatedAt": "2026-10-24T20:15:00.000Z"
 }
