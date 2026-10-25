@@ -140,9 +140,9 @@
     {
       "day": 20,
       "date": "2026-10-24",
-      "status": "pending",
-      "summary": "",
-      "tweetUrl": null
+      "status": "reset",
+      "summary": "Day 20 \"Rest and reset\": usage reset for everyone, to be fully propagated by midnight PST (confirmed later that night: \"It is all propagated. Enjoy some mad codexing tomorrow.\").",
+      "tweetUrl": "https://x.com/thsottiaux/status/2114200152701575656"
     },
     {
       "day": 21,
@@ -201,5 +201,5 @@
       "tweetUrl": null
     }
   ],
-  "updatedAt": "2026-10-24T20:15:00.000Z"
+  "updatedAt": "2026-10-25T10:50:00.000Z"
 }
