@@ -617,13 +617,27 @@
     {
       "day": 21,
       "date": "2026-10-25",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "21.1",
+          "summary": "Day 21 usage reset for everyone (\"Wonder what happens the remaining seven days. But today is a reset.\").",
+          "tweetUrl": "https://x.com/thsottiaux/status/2114588174249071102",
+          "status": "reset"
+        }
+      ],
       "grokbot": []
     },
     {
       "day": 22,
       "date": "2026-10-26",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "22.1",
+          "summary": "GPT-6.1 Terra is back: OpenAI's first model significantly better at writing, personality and nuanced understanding of requests, very good at computer use, with 2X more usage than 6.1 Sol across API and subscriptions.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2114800277677092936",
+          "status": "improvement"
+        }
+      ],
       "grokbot": []
     },
     {
@@ -663,5 +677,5 @@
       "grokbot": []
     }
   ],
-  "updatedAt": "2026-10-25T10:50:00.000Z"
+  "updatedAt": "2026-10-26T20:17:26.000Z"
 }
