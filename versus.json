@@ -643,8 +643,25 @@
     {
       "day": 23,
       "date": "2026-10-27",
-      "tibo": [],
-      "grokbot": []
+      "tibo": [
+        {
+          "number": "23.1",
+          "summary": "Day 23 usage reset for everyone, landing by midnight PST (he joked it was the much-requested iCloud Mail & Calendar plugins: \"Just kidding, today is a reset.\"; confirmed later that night: \"And it's done.\").",
+          "tweetUrl": "https://x.com/thsottiaux/status/2115273064481218829",
+          "status": "reset"
+        }
+      ],
+      "grokbot": [
+        {
+          "number": "23.1",
+          "summary": "Release 0.77.0 is stable: permission settings for your auto-review rules, pick which payment method Bots use first in the vault, and Bots can ask several questions on one card.",
+          "tweetUrl": "https://x.com/ericzakariasson/status/2115238537792815303",
+          "postedAt": "2026-10-27T17:25:41-07:00",
+          "announcedBy": "ericzakariasson",
+          "potetoUrl": "https://x.com/poteto/status/2115242399312290040",
+          "status": "improvement"
+        }
+      ]
     },
     {
       "day": 24,
@@ -677,5 +694,5 @@
       "grokbot": []
     }
   ],
-  "updatedAt": "2026-10-26T20:17:26.000Z"
+  "updatedAt": "2026-10-28T20:20:00.000Z"
 }
