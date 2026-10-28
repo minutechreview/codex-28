@@ -161,9 +161,9 @@
     {
       "day": 23,
       "date": "2026-10-27",
-      "status": "pending",
-      "summary": "",
-      "tweetUrl": null
+      "status": "reset",
+      "summary": "Day 23 usage reset for everyone, landing by midnight PST (he joked it was the much-requested iCloud Mail & Calendar plugins: \"Just kidding, today is a reset.\"; confirmed later that night: \"And it's done.\").",
+      "tweetUrl": "https://x.com/thsottiaux/status/2115273064481218829"
     },
     {
       "day": 24,
@@ -201,5 +201,5 @@
       "tweetUrl": null
     }
   ],
-  "updatedAt": "2026-10-26T20:17:26.000Z"
+  "updatedAt": "2026-10-28T20:20:00.000Z"
 }
