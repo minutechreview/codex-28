@@ -666,13 +666,37 @@
     {
       "day": 24,
       "date": "2026-10-28",
-      "tibo": [],
-      "grokbot": []
+      "tibo": [
+        {
+          "number": "24.1",
+          "summary": "Text your dot: give it a task by text, photos or voice notes over iMessage or RCS and it texts you back with proactive updates (preview for Pro users in the US).",
+          "tweetUrl": "https://x.com/thsottiaux/status/2115622002581188681",
+          "status": "improvement"
+        }
+      ],
+      "grokbot": [
+        {
+          "number": "24.1",
+          "summary": "Release 0.78.1 is stable: shopping results show up as product cards, new subscription templates, and you can connect Shop Pay in the vault.",
+          "tweetUrl": "https://x.com/ericzakariasson/status/2115586309096083730",
+          "postedAt": "2026-10-28T16:27:36-07:00",
+          "announcedBy": "ericzakariasson",
+          "potetoUrl": "https://x.com/poteto/status/2115591199943983129",
+          "status": "improvement"
+        }
+      ]
     },
     {
       "day": 25,
       "date": "2026-10-29",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "25.1",
+          "summary": "Doubled usage limits for all Pro 100/200/500 tiers and Business Premium, effective today; Pro 200 limits won't be reduced, and extended dot limits stay (separate from default usage).",
+          "tweetUrl": "https://x.com/thsottiaux/status/2115850175868727621",
+          "status": "improvement"
+        }
+      ],
       "grokbot": []
     },
     {
@@ -694,5 +718,5 @@
       "grokbot": []
     }
   ],
-  "updatedAt": "2026-10-28T20:20:00.000Z"
+  "updatedAt": "2026-10-29T20:20:00.000Z"
 }
