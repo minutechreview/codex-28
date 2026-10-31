@@ -702,7 +702,14 @@
     {
       "day": 26,
       "date": "2026-10-30",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "26.1",
+          "summary": "You can now easily switch between multiple accounts on mobile, with desktop coming soon (he also teased that the next two days will be banked resets).",
+          "tweetUrl": "https://x.com/thsottiaux/status/2116405414921384099",
+          "status": "improvement"
+        }
+      ],
       "grokbot": []
     },
     {
@@ -718,5 +725,5 @@
       "grokbot": []
     }
   ],
-  "updatedAt": "2026-10-29T20:20:00.000Z"
+  "updatedAt": "2026-10-31T20:20:00.000Z"
 }
