@@ -189,9 +189,9 @@
     {
       "day": 27,
       "date": "2026-10-31",
-      "status": "pending",
-      "summary": "",
-      "tweetUrl": null
+      "status": "reset",
+      "summary": "Day 27 usage reset, banked: \"Banked 1/2\", the first of the two banked resets he teased on Day 26.",
+      "tweetUrl": "https://x.com/thsottiaux/status/2116692529970311254"
     },
     {
       "day": 28,
@@ -201,5 +201,5 @@
       "tweetUrl": null
     }
   ],
-  "updatedAt": "2026-10-31T20:20:00.000Z"
+  "updatedAt": "2026-11-01T20:12:37.000Z"
 }
