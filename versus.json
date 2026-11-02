@@ -728,7 +728,14 @@
     {
       "day": 28,
       "date": "2026-11-01",
-      "tibo": [],
+      "tibo": [
+        {
+          "number": "28.1",
+          "summary": "Day 28 usage reset, banked: \"Banked 2/2\", the second of the two banked resets he teased on Day 26, closing out the 28 days.",
+          "tweetUrl": "https://x.com/thsottiaux/status/2117035794678546764",
+          "status": "reset"
+        }
+      ],
       "grokbot": []
     }
   ],
